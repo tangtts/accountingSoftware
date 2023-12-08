@@ -10,5 +10,6 @@ import { GenCaptchaService } from "src/toolsServer/genCaptcha.service";
   imports: [TypeOrmModule.forFeature([User])],
   controllers: [UserController],
   providers: [UserService, GenCaptchaService],
+  exports:[UserService],
 }) 
 export class UserModule {}

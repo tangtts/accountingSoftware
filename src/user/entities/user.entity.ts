@@ -1,7 +1,12 @@
+import { Budget } from "src/budget/entities/budget.entity";
+import { TimeRangeBudget } from "src/budget/entities/budgetDetail.entity";
+import { CommonCategories } from "src/common/entities/commonCategories.entity";
+import { IncomeOrCost } from "src/income/entities/income.entity";
 import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
@@ -38,4 +43,29 @@ export class User {
     comment: "更新时间",
   })
   updateTime: Date;
+
+  // 消费记录关联
+  @OneToMany(()=>IncomeOrCost, incomeOrCost=>incomeOrCost.consumptionUser,{
+    cascade:true,
+    onDelete:"CASCADE"
+  })
+  consumptionRecord:IncomeOrCost[]
+
+  @OneToMany(()=>Budget, budget=>budget.userBudget,{
+    cascade:true,
+    onDelete:"CASCADE"
+  })
+  budgetRecord:Budget[]
+
+  @OneToMany(()=>TimeRangeBudget, budget=>budget.userTimeRangeBudget,{
+    cascade:true,
+    onDelete:"CASCADE"
+  })
+  timeRangeBudgetRecord:TimeRangeBudget[]
+
+  @OneToMany(()=>CommonCategories, category=>category.userCategory,{
+    cascade:true,
+    onDelete:"CASCADE"
+  })
+  categories:CommonCategories[]
 }

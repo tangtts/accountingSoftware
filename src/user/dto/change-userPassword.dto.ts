@@ -2,19 +2,11 @@ import { IsNotEmpty, IsNumberString, IsString, Length, MinLength, min, minLength
 import { IsStringAndNotEmpty } from "src/customDecorator";
 
 
-export class CreateUserDto {
+export class ChangeUserPasswordDto {
   @IsStringAndNotEmpty()
-  username: string;
-
-  @IsNumberString()
-  @IsNotEmpty()
-  @Length(11)
-  phoneNumber: string;
+  oldPassword: string;
 
   @IsStringAndNotEmpty()
-  @MinLength(6)
-  password: string;
-
-  @IsStringAndNotEmpty()
-  capcha: string;
+  newPassword: string;
+ 
 }

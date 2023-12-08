@@ -11,6 +11,11 @@ import { JwtModule } from "@nestjs/jwt";
 import { CommonModule } from './common/common.module';
 import { CommonCategories } from "./common/entities/commonCategories.entity";
 import { IncomeModule } from './income/income.module';
+import { APP_GUARD } from '@nestjs/core';
+import { AuthGuard } from './auth.guard';
+import { BudgetModule } from './budget/budget.module';
+import { Budget } from './budget/entities/budget.entity';
+import { TimeRangeBudget } from './budget/entities/budgetDetail.entity';
 @Module({
   imports: [
     UserModule,
@@ -41,20 +46,21 @@ import { IncomeModule } from './income/income.module';
           username: configService.get("mysql_server_username"),
           password: configService.get("mysql_server_password"),
           database: configService.get("mysql_server_database"),
-          entities: [User,CommonCategories,IncomeOrCost],
+          entities: [User,CommonCategories,IncomeOrCost,Budget,TimeRangeBudget],
           synchronize: true,
-          logging: true,
-          connectorPackage: "mysql2",
-          extra: {
-            authPlugin: "sha256_password",
-          },
+          logging: false,
+          connectorPackage: "mysql2"
         };
       },
     }),
     CommonModule,
     IncomeModule,
+    BudgetModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService,{
+    provide: APP_GUARD,
+    useClass: AuthGuard,
+  }],
 })
 export class AppModule {}
