@@ -1,0 +1,184 @@
+
+@use 'uni.scss' as varibleColors;
+@use "sass:math";
+@import 'uview-plus/theme.scss';
+$colors:(
+ success: varibleColors.$successColor,
+ warning: varibleColors.$warningColor,
+ primaryColor: varibleColors.$primaryColor,
+ "red":#ff0000
+);
+
+$numbers:0 50 100 200 300 400 500 600 700 800 900;
+@each $colorType,$color in $colors {
+	
+	.border-#{$colorType}{
+		border-color: $color;
+	}
+	
+	
+	@each $number in $numbers {
+	@if $number == 0 {
+		// 文本颜色
+		.text-#{$colorType}{
+			color:$color
+		}
+		// 边框颜色
+		.border-#{$colorType}{
+			border-color: $color
+		}
+		
+	}@else {
+		
+		.text-#{$colorType}-#{$number}{
+			color:darken($color: $color, $amount: math.div($number , 100))
+		}
+		
+		.border-#{$colorType}-#{$number}{
+			border-color: darken($color: $color, $amount: math.div($number , 100)) 
+		}
+	}
+	} 
+}
+
+
+
+
+.flex{
+	display: flex;
+}
+
+
+.container{
+	margin: 20rpx;
+}
+
+
+$flexType:(
+	col:column,
+	row:row,
+	col-reverse:col-reverse,
+	row-reverse:row-reverse
+);
+
+@each $type,$value in $flexType {
+    .flex-#{$type}{
+			flex-direction: $value;
+    }
+}
+
+$justifyType:(
+	start:flex-start,
+	end:flex-end,
+	center:center,
+	between:space-between,
+	around:space-around,
+	evenly:space-evenly
+);
+
+@each $type,$value in $justifyType {
+    .justify-#{$type}{
+			justify-content: $value;
+    }
+}
+
+
+$alignType:(
+	start,
+	center,
+	end,
+	baseline,
+);
+
+@each $type in $alignType {
+    .items-#{$type}{
+			align-items: $type;
+    }
+}
+
+
+@for $i from 1 through 40{
+	.flex-#{$i}{
+		flex:$i
+	}
+	.gap-#{$i}{
+		gap: #{$i}rpx;
+	}
+	
+	.pt-#{$i}{
+		padding-top:#{$i}rpx;
+	}
+	
+	.pb-#{$i}{
+		padding-bottom:#{$i}rpx;
+	}
+	
+	.pl-#{$i}{
+		padding-left:#{$i}rpx;
+	}
+	
+	.pr-#{$i}{
+		padding-right:#{$i}rpx;
+	}
+	
+	.px-#{$i}{
+		padding-inline:#{$i}rpx;
+	}
+	
+	.py-#{$i}{
+		padding-block: #{$i}rpx;
+	}
+	
+	.p-#{$i}{
+		padding:#{$i}rpx;
+	}
+	
+	.mt-#{$i}{
+		margin-top:#{$i}rpx;
+	}
+	
+	.mb-#{$i}{
+		margin-bottom:#{$i}rpx;
+	}
+	
+	.ml-#{$i}{
+		margin-left:#{$i}rpx;
+	}
+	
+	.mr-#{$i}{
+		margin-right:#{$i}rpx;
+	}
+	
+	.mx-#{$i}{
+		margin-inline:#{$i}rpx;
+	}
+	
+	.my-#{$i}{
+		margin-block: #{$i}rpx;
+	}
+	
+	.m-#{$i}{
+		margin:#{$i}rpx;
+	}
+}
+
+$positionType:(
+	top,
+	bottom,
+	left,
+	right
+);
+
+@each $position in $positionType{
+	.margin-#{$position}-auto {
+		margin-#{$position}: auto;
+	}
+	
+	.border-#{$position}{
+		border-#{$position}:1rpx solid;
+	}
+};
+
+
+
+
