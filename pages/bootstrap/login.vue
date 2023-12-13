@@ -14,7 +14,8 @@
 				<u-form-item borderBottom>
 					<u-button rounded @click="submit" type="primary">提交</u-button>
 				</u-form-item>
-
+				
+		<up-text text="没有账号？去注册"  type="primary" @click="goToRegister"></up-text>
 			</u--form>
 		</my-card>
 	</view>
@@ -29,6 +30,12 @@
 		reactive,
 		ref
 	} from "vue"
+
+const goToRegister = ()=>{
+	uni.navigateTo({
+		url:"/pages/bootstrap/register"
+	})
+}
 
 	const model = reactive({
 		phoneNumber: "",
@@ -56,7 +63,7 @@
 	const uFormRef = ref(null)
 
 	const submit = () => {
-
+	uni.removeStorageSync("token")
 		uFormRef.value.validate().then(res => {
 			uni.$u.toast('校验通过')
 			login(model).then(res => {

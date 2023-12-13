@@ -32,6 +32,12 @@ const http = {
 				resolve(res.data)
 			}, err => {
 				console.log(err, "err")
+				if(err.errMsg){
+					uni.showToast({
+						title: err.errMsg,
+						icon: "none"
+					})
+				}
 				reject(err)
 			})
 		})
@@ -99,6 +105,9 @@ export const getTimeRangeIncomeCost = () => http.get('/income/getTimeRangeIncome
  export const updateTimeRange = (params) => http.post('/budget/updateTimeRange', params)
  export const createTimeRange = (params) => http.post('/budget/createTimeRange', params)
  
-
+export const userDetail = (params) => http.get('/user/detail', params)
+export const userUpdate = (params) => http.post('/user/update', params)
 
 export const getCapcha = () => http.get('/user/capcha')
+
+
