@@ -9,7 +9,6 @@ import { TimeRangeBudget } from 'src/budget/entities/budgetDetail.entity';
 
 @Module({
   imports: [
-
     UserModule, TypeOrmModule.forFeature([CommonCategories,TimeRangeBudget])],
   controllers: [CommonController],
   providers: [CommonService]

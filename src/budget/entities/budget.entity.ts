@@ -23,6 +23,9 @@ export class Budget {
   })
   budget:number
 
-  @ManyToOne(()=>User,(user)=>user.budgetRecord)
+  @ManyToOne(()=>User,(user)=>user.budgetRecord,{
+      cascade:true,
+      onDelete:"CASCADE"
+  })
   userBudget:User
 }

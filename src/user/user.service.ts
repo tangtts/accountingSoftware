@@ -2,7 +2,7 @@ import { LoginUserDto } from "./dto/login-user.dto";
 import { RedisService } from "./../redis/redis.service";
 import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { CreateUserDto } from "./dto/create-user.dto";
-import { UpdateUserDto } from "./dto/update-user.dto";
+import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from "@nestjs/typeorm";
 import { User } from "./entities/user.entity";
 import { Repository } from "typeorm";
@@ -142,5 +142,16 @@ export class UserService {
 
   async save(user: User) {
     return await this.userRepository.save(user);
+  }
+
+  async getUserDetail(uid:number){
+    return await this.userRepository.findOneBy({
+      id:uid
+    });
+  }
+  
+  async updateUser(uid:number,updateUserDto:UpdateUserDto){
+    console.log("🚀 ~ file: user.service.ts:154 ~ UserService ~ updateUser ~ updateUserDto:", updateUserDto);
+    return this.userRepository.update(uid,updateUserDto);
   }
 }

@@ -50,10 +50,8 @@ export class IncomeService {
     let r = await this.incomeOrCost.findOneBy({
       id: detailId,
     });
-    // let picUrl = r.picUrl.split(",");
     return {
       ...r,
-      // picUrl,
     };
   }
 

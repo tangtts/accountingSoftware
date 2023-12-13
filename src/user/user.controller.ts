@@ -58,4 +58,14 @@ export class UserController {
   ) {
     return this.userService.changeUserPassword(uid, changeUserPasswordDto);
   }
+
+  @Get("detail")
+  userDetail(@UserInfo("uid") uid) {
+    return this.userService.getUserDetail(uid);
+  }
+
+  @Post("update")
+  updateUser(@UserInfo("uid") uid,@Body() updateUserDto:UpdateUserDto) {
+    return this.userService.updateUser(uid,updateUserDto);
+  }
 }

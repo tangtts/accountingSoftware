@@ -5,10 +5,13 @@ import { UserModule } from 'src/user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Budget } from './entities/budget.entity';
 import { User } from 'src/user/entities/user.entity';
+
+
 import { TimeRangeBudget } from './entities/budgetDetail.entity';
+import { CommonCategories } from 'src/common/entities/commonCategories.entity';
 
 @Module({
-  imports:[UserModule,TypeOrmModule.forFeature([Budget,User,TimeRangeBudget])],
+  imports:[UserModule,TypeOrmModule.forFeature([Budget,User,TimeRangeBudget,CommonCategories])],
   controllers: [BudgetController],
   providers: [BudgetService]
 })

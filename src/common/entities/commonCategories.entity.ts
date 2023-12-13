@@ -1,3 +1,4 @@
+import { Exclude } from "class-transformer";
 import { Budget } from "src/budget/entities/budget.entity";
 import { TimeRangeBudget } from "src/budget/entities/budgetDetail.entity";
 import { User } from "src/user/entities/user.entity";
@@ -28,6 +29,12 @@ export class CommonCategories {
   })
   value: string;
 
+  @Column({
+    comment: "对应的预期数量",
+    default: 0,
+  })
+  amount: number;
+
   @CreateDateColumn({
     comment: "创建时间",
   })
@@ -38,10 +45,32 @@ export class CommonCategories {
   })
   updateTime: Date;
 
-  @ManyToOne(()=>User,(user)=>user.categories)
+  // 当分类改变后，需要更新用户的分类
+  @ManyToOne(() => User, user => user.categories, {
+    cascade: true,
+    onDelete: "CASCADE",
+  })
   userCategory: User;
 
-  // 一个分类对应多个
-  @OneToMany(()=>TimeRangeBudget,(timeRangeBudget)=>timeRangeBudget.commonCategories)
+  // 所有的
+  // @OneToMany(
+  //   () => User,
+  //   timeRangeBudget => timeRangeBudget.commonCategories,
+  //   {
+  //     cascade: true,
+  //     onDelete: "CASCADE",
+  //   }
+  // )
+  // timeRangeBudgetUser: TimeRangeBudget[];
+
+  // 当分类改变后，需要更新消费记录的分类
+  @OneToMany(
+    () => TimeRangeBudget,
+    timeRangeBudget => timeRangeBudget.commonCategories,
+    {
+      cascade: true,
+      onDelete: "CASCADE",
+    }
+  )
   timeRangeBudget: TimeRangeBudget[];
 }

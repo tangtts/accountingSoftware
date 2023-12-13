@@ -59,6 +59,7 @@ export class CommonController {
           file.originalname = Buffer.from(file.originalname, "latin1").toString(
             "utf8"
           );
+          console.log(file.originalname,file)
           const uniqueSuffix = Date.now() + "-" + file.originalname;
           cb(null, file.fieldname + "-" + uniqueSuffix);
         },

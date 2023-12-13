@@ -42,9 +42,16 @@ export class TimeRangeBudget {
   budgetList: ITimeRangeBudgetList[];
 
   // 关联用户
-  @ManyToOne(() => User, user => user.timeRangeBudgetRecord)
+  @ManyToOne(() => User, user => user.timeRangeBudgetRecord,{
+    cascade:true,
+    onDelete:"CASCADE"
+  })
   userTimeRangeBudget: User;
 
   @ManyToOne(() => CommonCategories, category => category.timeRangeBudget)
   commonCategories:CommonCategories
+
+
+
+  
 }
