@@ -1,28 +1,23 @@
 <template>
 	<view class="container">
-		<header class="flex justify-end gap-20 mb-20">
+		<!-- <header class="flex justify-end gap-20 mb-20">
 			<u-icon name="rmb" label="收益" color="red" size="20px"></u-icon>
-
 			<u-icon name="grid-fill" label="图表" color="orange" size="20px"></u-icon>
-
-			<u-icon name="chrome-circle-fill" label="换肤" color="green" size="20px"></u-icon>
-		</header>
+		</header> -->
 
 		<my-card class="header">
 			<view class="flex items-center">
 				<text class="month"> {{dayjs().month() + 1}}</text> 月 . 支出
 				<view class="ml-20 justify-end">
-					<up-text color="white" mode="price" :block="false"
-						:text="timeRangeIncomeCost.month.cost" />
+					<up-text color="white" mode="price" :block="false" :text="timeRangeIncomeCost.month.cost" />
 				</view>
 			</view>
-
 
 			<view class="flex">
 				预算：
 				<up-text color="white" :text="budget ? budget : '点此设置'" @click="openSettingDialog" />
 
-				<text class="mr-20">本月收入:</text>
+				<text class="mr-20">本月净收入:</text>
 				<up-text color="white" mode="price" :block="false"
 					:text="timeRangeIncomeCost.month.income - timeRangeIncomeCost.month.cost" />
 
@@ -128,8 +123,7 @@
 	const showPopup = ref(false);
 
 	const model = reactive({
-		year: new Date().getFullYear(),
-		month: new Date().getMonth() + 1,
+		type: 3,
 		budget: ""
 	});
 
@@ -179,7 +173,9 @@
 	const budget = ref(0)
 
 	const getBudgetDetail = () => {
-		budgetDetail(model).then(res => {
+		budgetDetail({
+			type: "1"
+		}).then(res => {
 			budget.value = res.budget
 		})
 	}

@@ -6,7 +6,10 @@ $colors:(
  success: varibleColors.$successColor,
  warning: varibleColors.$warningColor,
  primaryColor: varibleColors.$primaryColor,
- "red":#ff0000
+ "red":#ff0000,
+ "orange":#ffa500,
+ "green":#008000,
+ 
 );
 
 $numbers:0 50 100 200 300 400 500 600 700 800 900;
@@ -29,7 +32,6 @@ $numbers:0 50 100 200 300 400 500 600 700 800 900;
 		}
 		
 	}@else {
-		
 		.text-#{$colorType}-#{$number}{
 			color:darken($color: $color, $amount: math.div($number , 100))
 		}
@@ -37,9 +39,27 @@ $numbers:0 50 100 200 300 400 500 600 700 800 900;
 		.border-#{$colorType}-#{$number}{
 			border-color: darken($color: $color, $amount: math.div($number , 100)) 
 		}
-	}
+		.bold-#{$number}{
+			font-weight: $number;
+		}
+	 }
 	} 
 }
+
+$fontSizes:60;
+@each $size in $fontSizes {
+	.font-#{$size}{
+		font-size: #{$size}rpx;
+	}
+}
+
+$widthSizes:60;
+@each $size in $widthSizes {
+	.w-#{$size}{
+		width: #{$size}rpx;
+	}
+}
+
 
 
 

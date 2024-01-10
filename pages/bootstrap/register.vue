@@ -28,9 +28,12 @@
 						</template>
 					</up-input>
 				</u-form-item>
-				<u-form-item label="" >
-				<u-button @click="submit" type="primary">提交</u-button>
-</u-form-item>
+				<u-form-item label="">
+					<u-button @click="submit" type="primary">提交</u-button>
+				</u-form-item>
+				<u-form-item label="">
+					<up-text type="primary" text="去登录" @click="goToLogin"></up-text>
+					</u-form-item>
 			</u--form>
 		</my-card>
 	</view>
@@ -96,15 +99,20 @@
 	});
 
 	const capcha = ref('')
-	
-	const genCapcha = ()=>{
+
+	const goToLogin = ()=>{
+		uni.redirectTo({
+			url:"/pages/bootstrap/login",
+		})
+	}
+
+	const genCapcha = () => {
 		getCapcha().then(res => {
-			console.log(res)
 			capcha.value = res
 		})
 	}
 	genCapcha()
-	
+
 
 	const uFormRef = ref(null)
 
@@ -113,7 +121,7 @@
 		uFormRef.value.validate().then(res => {
 			register(model).then(res => {
 				uni.navigateTo({
-					url:"/pages/bootstrap/login"
+					url: "/pages/bootstrap/login"
 				})
 			})
 		}).catch(errors => {

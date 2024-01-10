@@ -1,20 +1,18 @@
 <template>
 	<view class="container">
 		<u-tabs :list="list" :current="form.type" @click="clickTab"></u-tabs>
-
-		<!-- <swiper style="height: 100vh;" :current-item-id="tabIndex" :autoplay="false"
-		 @change="swiperChange">
-			<swiper-item item-id="0"> -->
-
-		<view>
+		<view class="mt-40">
 			<view class="border-bottom border-red-200  flex justify-end">
 
 				<view class="flex-1 flex margin-top-auto">
-					<up-input type="number" clearable placeholder="请输入金额" border="none" v-model="form.amount"></up-input>
+					<up-input
+					   prefixIcon="edit-pen"
+					 type="number" clearable  placeholder="请输入金额" border="none" v-model="form.amount"></up-input>
 				</view>
 
 				<view>
-					<u-upload :fileList="form.picUrls" @delete="deletePic" @afterRead="afterRead" max-count="5" name="1"
+					<u-upload :fileList="form.picUrls" @delete="deletePic" 
+					@afterRead="afterRead" max-count="5" name="1"
 						uploadIcon="camera-fill" uploadIconColor="#b15426">
 					</u-upload>
 				</view>
@@ -49,19 +47,19 @@
 			</u-cell-group>
 			<u-button rounded @click="submit" type="primary">提交</u-button>
 		</view>
-		<!-- </swiper-item> -->
-		<!-- <swiper-item item-id="1"> -->
-		<!-- <view><text class="swiper-item-Text">收入</text></view> -->
-		<!-- </swiper-item> -->
-		<!-- </swiper> -->
 
-		<u-action-sheet @close="isCategoryActionSheetShow = false" cancelText="取消" safeAreaInsetBottom
-			:actions="categoryActionSheetActions" @select="(type)=>selectActionSheetClick('分类',type)" title="分类"
+		<u-action-sheet @close="isCategoryActionSheetShow = false" 
+		cancelText="取消" safeAreaInsetBottom
+			:actions="categoryActionSheetActions" 
+			@select="(type)=>selectActionSheetClick('分类',type)"
+			 title="分类"
 			:show="isCategoryActionSheetShow">
 		</u-action-sheet>
 
 		<u-action-sheet @close="isAccountActionSheetShow = false" cancelText="取消" safeAreaInsetBottom
-			:actions="accountActionSheetActions" @select="(type)=>selectActionSheetClick('账户',type)" title="账户"
+			:actions="accountActionSheetActions"
+			 @select="(type)=>selectActionSheetClick('账户',type)" 
+			 title="账户类型"
 			:show="isAccountActionSheetShow">
 		</u-action-sheet>
 

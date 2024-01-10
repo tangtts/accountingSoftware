@@ -13,7 +13,7 @@ const http = {
 
 	base(config) {
 		const fullPath = this.config.BASE_URL + config.url;
-		
+
 		return new Promise((resolve, reject) => {
 			uni.request({
 				method: config.method || this.config.method,
@@ -21,7 +21,6 @@ const http = {
 				header: this.config.header,
 				data: config.data
 			}).then(res => {
-				console.log(res, "res")
 				if (![200, 201].includes(res.statusCode)) {
 					handleErrorCode(res.statusCode, res.data.message)
 					reject(res.data)
@@ -32,7 +31,7 @@ const http = {
 				resolve(res.data)
 			}, err => {
 				console.log(err, "err")
-				if(err.errMsg){
+				if (err.errMsg) {
 					uni.showToast({
 						title: err.errMsg,
 						icon: "none"
@@ -92,22 +91,22 @@ export const login = (params) => http.post('/user/login', params)
 export const incomeCreate = (params) => http.post('/income/create', params)
 export const incomeAll = (params) => http.post('/income/all', params)
 export const findCategory = () => http.get('/common/findCategory')
-export const getIncomeDetail = (params) => http.get('/income/detail',params)
-export const updateIncome = (params) => http.post('/income/update',params)
+export const getIncomeDetail = (params) => http.get('/income/detail', params)
+export const updateIncome = (params) => http.post('/income/update', params)
 
 export const getTimeRangeIncomeCost = () => http.get('/income/getTimeRangeIncomeCost')
- 
- export const budgetCreate = (params) => http.post('/budget/create', params)
- export const budgetDetail = (params) => http.get('/budget/detail', params)
- export const getTimeRangeBudget = (params) => http.get('/budget/timeRangeBudgetList', params)
- export const changePassword = (params) => http.post('/user/changePassword', params)
- 
- export const updateTimeRange = (params) => http.post('/budget/updateTimeRange', params)
- export const createTimeRange = (params) => http.post('/budget/createTimeRange', params)
- 
+
+export const budgetCreate = (params) => http.post('/budget/create', params)
+
+export const budgetDetail = (params) => http.get('/budget/detailByType', params)
+
+export const getTimeRangeBudget = (params) => http.get('/budget/timeRangeBudgetList', params)
+export const changePassword = (params) => http.post('/user/changePassword', params)
+
+export const updateTimeRange = (params) => http.post('/budget/updateTimeRange', params)
+export const createTimeRange = (params) => http.post('/budget/createTimeRange', params)
+
 export const userDetail = (params) => http.get('/user/detail', params)
 export const userUpdate = (params) => http.post('/user/update', params)
 
 export const getCapcha = () => http.get('/user/capcha')
-
-

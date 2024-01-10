@@ -8,7 +8,7 @@
 				"enablePullDownRefresh": false
 			}
 		},
-		
+
 		{
 			"path": "pages/bootstrap/login",
 			"style": {
@@ -30,35 +30,38 @@
 			}
 		},
 		{
-			"path" : "pages/tabbar/funds/funds",
-			"style" : 
-			{
-				"navigationBarTitleText" : "",
-				"enablePullDownRefresh" : false
+			"path": "pages/tabbar/funds/funds",
+			"style": {
+				"navigationBarTitleText": "流水",
+				"enablePullDownRefresh": false
 			}
 		},
 		{
-			"path" : "pages/tabbar/budget/budget",
-			"style" : 
-			{
-				"navigationBarTitleText" : "",
-				"enablePullDownRefresh" : false
+			"path": "pages/tabbar/budget/budget",
+			"style": {
+				"navigationBarTitleText": "预算",
+				"enablePullDownRefresh": false
 			}
 		},
 		{
-			"path" : "pages/tabbar/my/my",
-			"style" : 
-			{
-				"navigationBarTitleText" : "",
-				"enablePullDownRefresh" : false
+			"path": "pages/tabbar/my/my",
+			"style": {
+				"navigationBarTitleText": "我的",
+				"enablePullDownRefresh": false
 			}
 		},
 		{
-			"path" : "pages/tabbar/createOrder/createOrder",
-			"style" : 
-			{
-				"navigationBarTitleText" : "",
-				"enablePullDownRefresh" : false
+			"path": "pages/tabbar/createOrder/createOrder",
+			"style": {
+				"navigationBarTitleText": "记一笔",
+				"enablePullDownRefresh": false
+			}
+		},
+		{
+			"path": "pages/views/chart/chart",
+			"style": {
+				"navigationBarTitleText": "",
+				"enablePullDownRefresh": false
 			}
 		}
 	],

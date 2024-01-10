@@ -1,18 +1,17 @@
 <template>
-	<view>
+	<view class="container">
 
-	<view class="flex">
-		<u-button type="primary" plain  @click="isAccountActionSheetShow = true">
-			收支类型: {{accountActionType.name}}
-	
-			<u-icon name="arrow-down" color="#2979ff"></u-icon>
-		</u-button>
-	
-		<u-button type="primary" plain @click="isTimeRangeActionSheetShow = true">
-			时间: {{timeRangeActionType.name}}
-			<u-icon name="arrow-up" color="#2979ff"></u-icon>
-		</u-button>
-</view>
+		<view class="flex gap-40">
+			<u-button :type="accountActionType.type" plain icon="order" @click="isAccountActionSheetShow = true">
+				{{accountActionType.name}}
+			</u-button>
+
+			<u-button :type="timeRangeActionType.type" icon="calendar" 
+			 plain
+			 @click="isTimeRangeActionSheetShow = true">
+				<text> {{timeRangeActionType.name}}</text>
+			</u-button>
+		</view>
 
 		<view v-if="list.length">
 			<u-list @scrolltolower="scrolltolower">
@@ -36,10 +35,10 @@
 		</u-action-sheet>
 
 		<u-action-sheet @close="isTimeRangeActionSheetShow = false" cancelText="取消" safeAreaInsetBottom
-			:actions="timeRangeActionSheetActions" @select="(type)=>selectActionSheetClick('时间',type)" title="区间类型"
+			:actions="timeRangeActionSheetActions" @select="(type)=>selectActionSheetClick('时间',type)" title="时间区间"
 			:show="isTimeRangeActionSheetShow">
 		</u-action-sheet>
-<up-back-top :scroll-top="scrollTop"></up-back-top>
+		<up-back-top :scroll-top="scrollTop"></up-back-top>
 	</view>
 </template>
 
@@ -66,27 +65,34 @@
 
 	const accountActionSheetActions = [{
 			id: "",
-			name: "全部"
+			name: "全部",
+			type: "primary",
 		},
 		{
 			id: "0",
-			name: "支出"
-		}, {
+			name: "收入",
+			type: "success",
+		},
+		{
 			id: "1",
-			name: "收入"
-		}
+			name: "支出",
+			type: "error",
+		},
 	]
 
 	const timeRangeActionSheetActions = [{
 			id: "0",
-			name: "今天"
+			name: "今天",
+			type: "primary",
 		}, {
 			id: "1",
-			name: "本周"
+			name: "本周",
+			type: "error",
 		},
 		{
 			id: "2",
-			name: "本月"
+			name: "本月",
+			type: "success",
 		},
 	]
 	const accountActionType = ref(accountActionSheetActions[0])
@@ -131,7 +137,7 @@
 			list.value = res.map(item => {
 				return {
 					id: item.id,
-					formatType: item.type == 0 ? 'primary' : 'error',
+					formatType: item.type == 1 ? 'primary' : 'error',
 					formatIcon: item.type == 0 ? `cut` : `fingerprint`,
 					formatPayTime: dayjs(item.payTime).format('YYYY-MM-DD HH:MM'),
 					formatAmount: item.amount
@@ -154,14 +160,11 @@
 		}
 		getAll()
 	}
-	
-	const scrollTop =ref(0)
-	onPageScroll(()=>{
+
+	const scrollTop = ref(0)
+	onPageScroll(() => {
 		scrollTop.value = 0
 	})
-	
-
-	
 </script>
 
 <style>

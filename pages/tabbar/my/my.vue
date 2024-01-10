@@ -1,29 +1,26 @@
 <template>
-	<view>
-		<my-card>
-			<view class="flex items-center">
-				头像：
-				<u-upload :fileList="fileList1" @afterRead="afterRead" @delete="deletePic" name="file">
-					<up-avatar :src="userDetails.avatar"></up-avatar>
-				</u-upload>
-			</view>
+	<view class="container">
+		<my-card class="header">
 
-			<view class="mt-20 flex">
-				<text> 昵称:</text>
-				<up-text @click="isTextUsername = true" :text="userDetails.username">
-				</up-text>
+			<view class="flex flex-col justify-center align-center">
+				<u-upload :fileList="fileList" @afterRead="afterRead" @delete="deletePic" name="file">
+					<up-avatar size="80" :src="userDetails.avatar"></up-avatar>
+				</u-upload>
+
+				<view class="mt-40">
+					<text class="font-60" @click="isTextUsername = true">
+						{{ userDetails.username}}
+					</text>
+				</view>
 			</view>
 		</my-card>
 
-
-		<u-cell-group>
+		<u-cell-group class="mt-40">
 			<u-cell icon="setting-fill" title="修改密码" @click="showPopup = true"></u-cell>
 			<u-cell icon="integral-fill" title="退出" @click="showModal = true"></u-cell>
 		</u-cell-group>
 
-
 		<u-popup :round="10" mode="center" :show="isTextUsername" @close="isTextUsername = false">
-
 			<my-card>
 				<u--form labelPosition="left" label-width="60">
 					<u-form-item label="用户名:" borderBottom>
@@ -33,7 +30,6 @@
 					<u-form-item label="" borderBottom>
 						<u-button rounded @click="update" type="primary">提交</u-button>
 					</u-form-item>
-
 				</u--form>
 			</my-card>
 		</u-popup>
@@ -60,7 +56,6 @@
 
 		<u-modal width="220" @close="showModal = false" @confirm="logout" :show="showModal" title="确定要退出吗?"
 			closeOnClickOverlay>
-
 		</u-modal>
 	</view>
 </template>
@@ -85,33 +80,34 @@
 	const showModal = ref(false);
 	const isTextUsername = ref(false);
 
-const fileList1 = ref([]);
-const username = ref('');
+	const fileList = ref([]);
+	const username = ref('');
 	// 删除图片
 	const deletePic = (event) => {
-		fileList1.value.splice(event.index, 1);
+		fileList.value.splice(event.index, 1);
 	};
 
 	const update = () => {
 		userUpdate({
 			...userDetails.value,
-			username:username.value
+			username: username.value
 		}).then(res => {
 			getUserDetail()
-			if(isTextUsername.value){
+			if (isTextUsername.value) {
 				isTextUsername.value = false
 			}
 		})
 	}
 
 	const afterRead = async (event) => {
-		let a = uni.uploadFile({
-			url: `${BASE_URL}/common/upload`, // 仅为示例，非真实的接口地址
-			filePath: event.url,
+		uni.uploadFile({
+			url: `${BASE_URL}/common/upload`,
+			filePath: event.file.url,
 			name: 'file',
 			success: (res) => {
 				let data = JSON.parse(res.data);
-				userDetails.value.avatar = data.data.url
+				userDetails.value.avatar = data.data.url;
+				update()
 			},
 		});
 	}
@@ -142,7 +138,8 @@ const username = ref('');
 	const getUserDetail = () => {
 		userDetail().then(res => {
 			userDetails.value = res;
-			username.value = res.username
+			username.value = res.username;
+
 		})
 	}
 	onShow(getUserDetail)
@@ -173,5 +170,12 @@ const username = ref('');
 </script>
 
 <style>
-
+	.header {
+		height: 320rpx;
+		display: flex;
+		flex-direction: column;
+		justify-content: flex-end;
+		color: white;
+		background: linear-gradient(to right, #314755 0%, #26a0da 51%, #314755 100%) no-repeat center/cover;
+	}
 </style>
