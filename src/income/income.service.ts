@@ -35,27 +35,31 @@ export class IncomeService {
   }
 
   async update(updateIncomeDto: UpdateIncomeDto) {
-    let r = this.findOneIncomeOrCostById(updateIncomeDto.id);
+    let r = await this.findOneIncomeOrCostById(updateIncomeDto.id);
     if (!r) {
       throw new HttpException("请确认是否有此消费或者支出记录!", HttpStatus.BAD_REQUEST);
     }
-    // if(!updateIncomeDto.picUrls.length){
-    //   updateIncomeDto.picUrls
-    // }
-    await this.incomeOrCost.update(updateIncomeDto.id, updateIncomeDto);
+
+    let picUrlsString = updateIncomeDto.picUrls.join(",");
+    
+    await this.incomeOrCost.save({
+      ...updateIncomeDto,
+      picUrlsString
+    });
     return "success";
   }
 
-  async getDetail(detailId: number) {
+  async getDetail(id: number) {
     let r = await this.incomeOrCost.findOneBy({
-      id: detailId,
+      id,
     });
+    let picUrls = r.picUrlsString?.split(",");
+    delete r.picUrlsString
     return {
       ...r,
+      picUrls
     };
   }
-
- 
 
   async getAllIncomeFromTimeAndType(
     userId: number,

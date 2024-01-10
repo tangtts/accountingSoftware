@@ -62,15 +62,4 @@ export class CommonCategories {
   //   }
   // )
   // timeRangeBudgetUser: TimeRangeBudget[];
-
-  // 当分类改变后，需要更新消费记录的分类
-  @OneToMany(
-    () => TimeRangeBudget,
-    timeRangeBudget => timeRangeBudget.commonCategories,
-    {
-      cascade: true,
-      onDelete: "CASCADE",
-    }
-  )
-  timeRangeBudget: TimeRangeBudget[];
 }

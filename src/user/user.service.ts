@@ -152,6 +152,7 @@ export class UserService {
   
   async updateUser(uid:number,updateUserDto:UpdateUserDto){
     console.log("🚀 ~ file: user.service.ts:154 ~ UserService ~ updateUser ~ updateUserDto:", updateUserDto);
-    return this.userRepository.update(uid,updateUserDto);
+     await this.userRepository.update(uid,updateUserDto);
+     return "success"
   }
 }

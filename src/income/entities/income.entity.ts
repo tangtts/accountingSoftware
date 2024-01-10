@@ -1,6 +1,9 @@
+import { Exclude } from "class-transformer";
 import { IsNumber } from "class-validator";
 import { User } from "src/user/entities/user.entity";
 import {
+  BeforeInsert,
+  BeforeUpdate,
   Column,
   CreateDateColumn,
   Entity,
@@ -41,17 +44,8 @@ export class IncomeOrCost {
   amount: string;
 
   @Column({ type: "text", nullable: true, comment: "照片url" })
+  @Exclude()
   picUrlsString: string;
-
-  get picUrls(): string[] {
-    // 将字符串分割为数组
-    return this.picUrlsString ? this.picUrlsString.split(",") : [];
-  }
-
-  set picUrls(urls: string[]) {
-    // 将数组转换为字符串
-    this.picUrlsString = urls.join(",");
-  }
 
   @Column({
     comment: "类别",

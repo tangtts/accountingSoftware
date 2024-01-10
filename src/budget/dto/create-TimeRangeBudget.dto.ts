@@ -1,26 +1,31 @@
-import { Transform, Type } from "class-transformer";
-import { IsDate, IsEnum, IsIn, IsNotEmpty, IsNumber, IsString, ValidateNested, isNotEmpty } from "class-validator";
+import { Transform, Type, plainToClass } from "class-transformer";
+import { IsDate, IsNotEmpty, IsNumber, IsNumberString, IsString, ValidateNested, isNotEmpty } from "class-validator";
 import { IsStringAndNotEmpty } from "src/customDecorator";
 import { ITimeRangeBudgetList } from "../entities/budgetDetail.entity";
+import { Budget } from 'src/budget/entities/budget.entity';
 
 class TimeRangeBudget {
+  @IsNumber()
+  id: number;
+
   @IsStringAndNotEmpty()
   name: string;
 
+  @Transform(({value})=>Number(value))
   @IsNumber()
   budget: number;
 }
 
 export class CreateTimeRangeBudgetDto {
-  @Transform(({ value }) => new Date(value))
-  @IsDate()
-  startTime:Date
+  @IsNotEmpty()
+  @IsNumber()
+  startDateTimestamp: number
 
-  @Transform(({ value }) => new Date(value))
-  @IsDate()
-  endTime:Date
+  @IsNotEmpty()
+  @IsNumber()
+  endDateTimestamp: number
 
-  @Type(()=>TimeRangeBudget)
+  @Type(() => TimeRangeBudget)
   @ValidateNested({ each: true })
-  budgetList:ITimeRangeBudgetList[]
+  budgetList: ITimeRangeBudgetList[]
 }

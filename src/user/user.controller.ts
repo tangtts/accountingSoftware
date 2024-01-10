@@ -66,6 +66,7 @@ export class UserController {
 
   @Post("update")
   updateUser(@UserInfo("uid") uid,@Body() updateUserDto:UpdateUserDto) {
+    console.log(updateUserDto);
     return this.userService.updateUser(uid,updateUserDto);
   }
 }

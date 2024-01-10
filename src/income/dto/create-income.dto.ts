@@ -27,10 +27,7 @@ export class CreateIncomeDto {
   amount: string;
 
   // undefined 可以满足 isOptional
-  @Transform(({ value }) => value.length == 0 ? undefined : value)
   @IsOptional()
-  @ValidateNested()
-  @ArrayMinSize(1)
   @IsUrl(undefined, { each: true })
   picUrls: Array<string>;
 

@@ -11,7 +11,9 @@ import { TimeRangeBudget } from "./entities/budgetDetail.entity";
 import { UpdateTimeRangeBudgetDto } from "./dto/update-TimeRangeBudget.dto";
 import * as dayjs from "dayjs";
 import * as isSameOrBefore from "dayjs/plugin/isSameOrBefore";
+import { CommonCategories } from "src/common/entities/commonCategories.entity";
 dayjs.extend(isSameOrBefore);
+
 
 @Injectable()
 export class BudgetService {
@@ -24,41 +26,93 @@ export class BudgetService {
   @InjectRepository(TimeRangeBudget)
   private readonly timeRangeBudgetRepo: Repository<TimeRangeBudget>;
 
-  async create(uid: number, createBudgetDto: CreateBudgetDto) {
+  async create(uid: number, { startTimestamp, endTimestamp, budget }) {
     let user = await this.userService.findUserWithBudgetById(uid);
 
     const existBudget = user.budgetRecord.find(
       item =>
-        item.year == createBudgetDto.year && item.month == createBudgetDto.month
+        item.startDateTimestamp == startTimestamp &&
+        item.endDateTimestamp == endTimestamp
     );
     // 如果存在旧的，就更新
     if (existBudget) {
-      return this.update({ id: existBudget.id, ...createBudgetDto });
+      return this.budget.update(existBudget.id,
+        {
+          budget,
+        })
     }
 
     await this.budget.save({
       userBudget: user,
-      ...createBudgetDto,
+      budget,
+      endDateTimestamp: endTimestamp,
+      startDateTimestamp: startTimestamp
     });
     return "succes";
   }
 
-  async getTimeRangeBudgetList(uid: number, startTime: Date, endTime: Date) {
+  private async generateBudgetList(startTimestamp: number, endTimestamp: number, categories: CommonCategories[], uid: number) {
     // 找到所有的分类
-    let { timeRangeBudgetRecord,budgetRecord, categories } =
-    await this.userService.findUserWithTimeRangeById(uid);
+    return await this.timeRangeBudgetRepo.save({
+      userTimeRangeBudget: await this.userService.findUserWithTimeRangeById(uid),
+      startTimestamp,
+      endTimestamp,
+      // 自定义的分类
+      budgetList: categories.map(item => {
+        return {
+          id: item.id,
+          budget: 0,
+          name: item.name
+        }
+      }
+      )
+    })
+  }
+  async getTimeRangeBudgetList(uid: number, startTimestamp: number, endTimestamp: number) {
+    // 找到所有的分类
+    let { timeRangeBudgetRecord, categories } =
+      await this.userService.findUserWithTimeRangeById(uid);
 
-    // 找到所有 记录，找到 uid 的记录
-    let r =  await this.timeRangeBudgetRepo.find()
-    console.log("🚀 ~ file: budget.service.ts:52 ~ BudgetService ~ getTimeRangeBudgetList ~ r:", r);
-      
+    // 找是否有今天的记录
     let filterTimeRangeBudgetRecord = timeRangeBudgetRecord.find(record => {
-      return (
-        startTime.getTime() < record.startTime.getTime() &&
-        record.endTime.getTime() < endTime.getTime()
-      );
+      return record.startTimestamp == startTimestamp && record.endTimestamp == endTimestamp;
     });
-    return filterTimeRangeBudgetRecord?.commonCategories;
+
+
+    // 如果没有就创建一个
+    if (filterTimeRangeBudgetRecord) {
+      // 判断是否增加/修改了 categories
+      let list = filterTimeRangeBudgetRecord.budgetList;
+
+      // 遍历 分类 
+      // 找到 bugetlist 中是否有这个分类
+      return {
+        id: filterTimeRangeBudgetRecord.id,
+        data: categories.map(category => {
+          let hasExist = list.find(l => l.id == category.id);
+
+          if (hasExist) {
+            return {
+              id: hasExist.id,
+              name: category.name,
+              budget: hasExist.budget,
+            }
+          } else {
+            return {
+              id: category.id,
+              name: category.name,
+              budget: 0,
+            }
+          }
+        })
+      }
+    }
+
+    let r = await this.generateBudgetList(startTimestamp, endTimestamp, categories, uid)
+    return {
+      data: r.budgetList,
+      id: r.id
+    };
   }
 
   async createTimeRangeBudget(
@@ -80,15 +134,15 @@ export class BudgetService {
         return {
           budget: String(existBudget.budget),
           name: existBudget.name,
-          startTime: createBudgetDto.startTime,
-          endTime: createBudgetDto.endTime,
+          startTime: createBudgetDto.startDateTimestamp,
+          endTime: createBudgetDto.endDateTimestamp,
         };
       } else {
         return {
           budget: "0",
           name: item.name,
-          startTime: createBudgetDto.startTime,
-          endTime: createBudgetDto.endTime,
+          startTime: createBudgetDto.startDateTimestamp,
+          endTime: createBudgetDto.endDateTimestamp,
         };
       }
     });
@@ -96,34 +150,31 @@ export class BudgetService {
     let budget = new TimeRangeBudget();
     budget.userTimeRangeBudget = user;
 
-    budget.startTime = createBudgetDto.startTime;
+    budget.startTimestamp = createBudgetDto.startDateTimestamp;
 
-    budget.endTime = createBudgetDto.endTime;
+    budget.endTimestamp = createBudgetDto.endDateTimestamp;
 
     budget.budgetList = mergeCategories;
     await this.timeRangeBudgetRepo.save(budget);
     return "succes";
   }
 
-  async getAllTimeRangeBudget(uid: number, startTime: string, endTime: string) {
+  async getAllTimeRangeBudget(uid: number, startTimestamp: number, endTimestamp: number) {
     let user = await this.userService.findUserWithTimeRangeById(uid);
     return (
       user.timeRangeBudgetRecord.find(record => {
-        // startTime <= record 的 startTime 并且 endTime >= record 的 endTime
-        return (
-          dayjs(record.startTime).isSameOrBefore(dayjs(startTime)) &&
-          dayjs(endTime).isSameOrBefore(dayjs(record.endTime))
-        );
+        return record.startTimestamp == startTimestamp && record.endTimestamp == endTimestamp;
       })?.budgetList || []
     );
   }
 
-  async findOne(uid: number, year: string, month: string) {
+  async findOne(uid: number, startDateTimestamp: string, endDateTimestamp: string) {
     let user = await this.userService.findUserWithBudgetById(uid);
     return (
       user.budgetRecord.find(item => {
-        return item.year == year && item.month == month;
-      }) || {}
+        return item.startDateTimestamp == startDateTimestamp
+          && item.endDateTimestamp == endDateTimestamp
+      }) || { budget: 0 }
     );
   }
 
@@ -131,31 +182,20 @@ export class BudgetService {
     uid: number,
     updateBudgetDto: UpdateTimeRangeBudgetDto
   ) {
-    console.log(
-      "🚀 ~ file: budget.service.ts:147 ~ BudgetService ~ updateBudgetDto:",
-      updateBudgetDto
-    );
-
     let { timeRangeBudgetRecord } =
       await this.userService.findUserWithTimeRangeById(uid);
 
     const budget = timeRangeBudgetRecord.find(record => {
-      // startTime <= record 的 startTime 并且 endTime >= record 的 endTime
-      return (
-        dayjs(record.startTime).isSame(dayjs(updateBudgetDto.startTime)) &&
-        dayjs(updateBudgetDto.endTime).isSame(dayjs(record.endTime))
-      );
+      return record.id == updateBudgetDto.id;
     });
 
-    console.log(
-      "🚀 ~ file: budget.service.ts:156 ~ BudgetService ~ budget ~ budget:",
-      budget
-    );
 
     if (budget) {
       this.timeRangeBudgetRepo.update(budget.id, updateBudgetDto);
+      return "success";
     }
-    return budget;
+
+    return new HttpException("budget not found", HttpStatus.NOT_FOUND);
   }
 
   async update(updateBudgetDto: UpdateBudgetDto) {

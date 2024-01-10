@@ -11,6 +11,7 @@ import * as dayjs from "dayjs";
 import { CommonCategories } from "src/common/entities/commonCategories.entity";
 
 export interface ITimeRangeBudgetList {
+  id:string,
   name: string;
   budget: number;
 }
@@ -20,20 +21,22 @@ export class TimeRangeBudget {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @BeforeInsert()
-  setDefaultStartTime() {
-    this.startTime = dayjs().startOf("day").toDate();
-  }
+  // @BeforeInsert()
+  // setDefaultStartTime() {
+  //   this.startTime = dayjs().startOf("day").toDate();
+  // }
 
   @Column({
-    type: "date",
+    type: "varchar",
+    length:13
   })
-  startTime: Date;
+  startTimestamp: number;
 
   @Column({
-    type: "date",
+    type: "varchar",
+    length:13
   })
-  endTime: Date;
+  endTimestamp: number;
 
   @Column({
     comment: "分类列表",
@@ -47,11 +50,4 @@ export class TimeRangeBudget {
     onDelete:"CASCADE"
   })
   userTimeRangeBudget: User;
-
-  @ManyToOne(() => CommonCategories, category => category.timeRangeBudget)
-  commonCategories:CommonCategories
-
-
-
-  
 }

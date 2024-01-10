@@ -5,7 +5,7 @@ import { CreateTimeRangeBudgetDto } from "./create-TimeRangeBudget.dto";
 
 export class UpdateTimeRangeBudgetDto extends PartialType(CreateTimeRangeBudgetDto) {
 
-  // @IsNotEmpty()
-  // @IsNumber()
-  // id:number
+  @IsNotEmpty()
+  @IsNumber()
+  id:number
 }

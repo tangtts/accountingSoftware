@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumberString, IsString, Length, MinLength, min, minLength } from "class-validator";
+import { IsNotEmpty, IsNumberString, IsOptional, IsString, Length, MinLength, min, minLength } from "class-validator";
 import { IsStringAndNotEmpty } from "src/customDecorator";
 
 
@@ -17,4 +17,7 @@ export class CreateUserDto {
 
   @IsStringAndNotEmpty()
   capcha: string;
+
+  @IsOptional()
+  avatar:string
 }

@@ -7,15 +7,29 @@ export class Budget {
   @PrimaryGeneratedColumn()
   id:number
 
-  @Column({
-    default:new Date().getFullYear()
-  })
-  year:string
+  // @Column({
+  //   default:new Date().getFullYear()
+  // })
+  // year:number
+
+  // @Column({
+  //   default:new Date().getMonth()
+  // })
+  // month:number
 
   @Column({
-    default:new Date().getMonth()
+    comment:"开始日期时间戳",
+    type:"varchar",
+    length:13
   })
-  month:string
+  startDateTimestamp:string
+
+  @Column({
+    comment:"结束日期时间戳",
+    type:"varchar",
+    length:13
+  })
+  endDateTimestamp:string
 
   @Column({
     comment:"预算金额",

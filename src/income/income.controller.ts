@@ -35,7 +35,7 @@ export class IncomeController {
   }
 
   @Get("/detail")
-  detail(@Query("detailId",new ParseIntPipe) detailId: number) {
+  detail(@Query("detailId",ParseIntPipe) detailId: number) {
     return this.incomeService.getDetail(detailId);
   }
 
