@@ -1,7 +1,7 @@
 import * as crypto from 'crypto';
 import * as dayjs from 'dayjs';
 
-export function md5(str) {
+export function encryptByMD5(str) {
     const hash = crypto.createHash('md5');
     hash.update(str);
     return hash.digest('hex');

@@ -6,26 +6,33 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from "@nestjs/typeorm";
 import { User } from "./entities/user.entity";
 import { Repository } from "typeorm";
-import { md5 } from "src/utils";
+import { encryptByMD5 } from "src/utils";
 import { JwtService } from "@nestjs/jwt";
 import { ChangeUserPasswordDto } from "./dto/change-userPassword.dto";
+import { ConfigService } from "@nestjs/config";
+import { ConfigEnum } from "src/config/config.enum";
 @Injectable()
 export class UserService {
-  @InjectRepository(User)
-  private readonly userRepository: Repository<User>;
+  
 
   // 使用写在这里就相当于 this 注入了
   constructor(
     private readonly redisService: RedisService,
-    private jwtService: JwtService
+    private jwtService: JwtService,
+
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+
+    private  configService:ConfigService
   ) {}
 
   async create(createUserDto: CreateUserDto) {
+    const prefix = this.configService.get(ConfigEnum.REDIS_REGISTER_CODE,"registerCode")
     // 要判断 capcha 是否正确
     let r = await this.redisService.get(
-      `registerCode:${createUserDto.capcha.toLocaleLowerCase()}`
+      `${prefix}:${createUserDto.capcha.toLocaleLowerCase()}`
     );
-
+    
     if (!r) {
       throw new HttpException("验证码失效", HttpStatus.BAD_REQUEST);
     }
@@ -35,19 +42,19 @@ export class UserService {
     }
 
     // 是否注册过
-    if (await this.isExitUser(createUserDto.phoneNumber)) {
+    if (await this.checkUserExistByPhoneNumber(createUserDto.phoneNumber)) {
       throw new HttpException("该手机号已注册", HttpStatus.BAD_REQUEST);
     }
 
     // 密码加密
-    createUserDto.password = md5(createUserDto.password);
+    createUserDto.password = encryptByMD5(createUserDto.password);
 
     await this.userRepository.save(createUserDto);
     return "success";
   }
 
   async login(loginUserDto: LoginUserDto) {
-    loginUserDto.password = md5(loginUserDto.password);
+    loginUserDto.password = encryptByMD5(loginUserDto.password);
     let user = await this.userRepository.findOneBy({
       phoneNumber: loginUserDto.phoneNumber,
       password: loginUserDto.password,
@@ -71,19 +78,19 @@ export class UserService {
     // 校验旧密码
     let { password } = await this.findUserById(uid);
 
-    if (md5(changeUserPasswordDto.oldPassword) !== password) {
+    if (encryptByMD5(changeUserPasswordDto.oldPassword) !== password) {
       throw new HttpException("旧密码不正确", HttpStatus.BAD_REQUEST);
     }
 
     await this.userRepository.update(
       { id: uid },
-      { password: md5(changeUserPasswordDto.newPassword) }
+      { password: encryptByMD5(changeUserPasswordDto.newPassword) }
     );
     return "success";
   }
 
   // true 说明存在有相同手机号的用户
-  async isExitUser(phoneNumber) {
+  async checkUserExistByPhoneNumber(phoneNumber:string) {
     return await this.userRepository.findOneBy({ phoneNumber });
   }
 

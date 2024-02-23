@@ -17,16 +17,24 @@ import { UpdateUserDto } from "./dto/update-user.dto";
 import { LoginUserDto } from "./dto/login-user.dto";
 import { RequireLogin, UserInfo } from "src/customDecorator";
 import { ChangeUserPasswordDto } from "./dto/change-userPassword.dto";
+import { ApiBody, ApiOperation, ApiTags } from "@nestjs/swagger";
+import { ConfigService } from "@nestjs/config";
+import { ConfigEnum } from "src/config/config.enum";
 
+@ApiTags("用户模块")
 @Controller("user")
 export class UserController {
   constructor(
     private readonly userService: UserService,
     private readonly genCaptchaService: GenCaptchaService,
-    private readonly redisService: RedisService
+    private readonly redisService: RedisService,
+    private  configService:ConfigService
   ) {}
 
-  @RequireLogin()
+  @ApiOperation({ summary: '注册' })
+  @ApiBody({
+    type: CreateUserDto
+  })
   @Post("register")
   create(@Body() createUserDto: CreateUserDto) {
     return this.userService.create(createUserDto);
@@ -38,12 +46,14 @@ export class UserController {
     return this.userService.login(loginUserDto);
   }
 
-  @RequireLogin()
+  @ApiOperation({ summary: '生成验证码' })
   @Get("capcha")
   createCapcha(@Res() res) {
     let { text, data } = this.genCaptchaService.captcha();
+    const prefix = this.configService.get(ConfigEnum.REDIS_REGISTER_CODE,"registerCode");
+    
     this.redisService.set(
-      `registerCode:${text.toLocaleLowerCase()}`,
+      `${prefix}:${text.toLocaleLowerCase()}`,
       text.toLocaleLowerCase(),
       1000
     );
