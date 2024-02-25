@@ -1,3 +1,4 @@
+import { ConfigEnum } from 'src/config/config.enum';
 import { Global, Module } from "@nestjs/common";
 import { RedisService } from "./redis.service";
 import { createClient } from "redis";
@@ -15,10 +16,12 @@ import { ConfigService } from "@nestjs/config";
       async useFactory(configService:ConfigService) {
         const client = createClient({
           socket: {
-            host: configService.get('redis_server_host'),
-            port: configService.get('redis_server_port'),
+            host: configService.get(ConfigEnum.REDIS_SERVER_HOST),
+            port: configService.get(ConfigEnum.REDIS_SERVER_PORT),
           },
-          database: configService.get('redis_server_db'),  // redis 的 database 就是一个命名空间的概念
+          database: configService.get(ConfigEnum.REDIS_SERVER_DB),  // redis 的 database 就是一个命名空间的概念
+          username:configService.get(ConfigEnum.REDIS_USERNAME),
+          password:configService.get(ConfigEnum.REDIS_PASSWORD),
         });
         await client.connect();
         return client;

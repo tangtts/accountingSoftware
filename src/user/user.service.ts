@@ -2,7 +2,7 @@ import { LoginUserDto } from "./dto/login-user.dto";
 import { RedisService } from "./../redis/redis.service";
 import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { CreateUserDto } from "./dto/create-user.dto";
-import { UpdateUserDto } from './dto/update-user.dto';
+import { UpdateUserDto } from "./dto/update-user.dto";
 import { InjectRepository } from "@nestjs/typeorm";
 import { User } from "./entities/user.entity";
 import { Repository } from "typeorm";
@@ -13,8 +13,6 @@ import { ConfigService } from "@nestjs/config";
 import { ConfigEnum } from "src/config/config.enum";
 @Injectable()
 export class UserService {
-  
-
   // 使用写在这里就相当于 this 注入了
   constructor(
     private readonly redisService: RedisService,
@@ -23,16 +21,19 @@ export class UserService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
 
-    private  configService:ConfigService
+    private configService: ConfigService
   ) {}
 
   async create(createUserDto: CreateUserDto) {
-    const prefix = this.configService.get(ConfigEnum.REDIS_REGISTER_CODE,"registerCode")
+    const prefix = this.configService.get(
+      ConfigEnum.REDIS_REGISTER_CODE,
+      "registerCode"
+    );
     // 要判断 capcha 是否正确
     let r = await this.redisService.get(
       `${prefix}:${createUserDto.capcha.toLocaleLowerCase()}`
     );
-    
+
     if (!r) {
       throw new HttpException("验证码失效", HttpStatus.BAD_REQUEST);
     }
@@ -55,17 +56,19 @@ export class UserService {
 
   async login(loginUserDto: LoginUserDto) {
     loginUserDto.password = encryptByMD5(loginUserDto.password);
+
     let user = await this.userRepository.findOneBy({
       phoneNumber: loginUserDto.phoneNumber,
       password: loginUserDto.password,
     });
 
     if (!user) {
-      return new HttpException("账号密码不正确", HttpStatus.BAD_REQUEST);
+      throw new HttpException("账号密码不正确", HttpStatus.BAD_REQUEST);
     }
 
     // 生成token
     const payload = { uid: user.id, username: user.username };
+
     return {
       access_token: await this.jwtService.signAsync(payload),
     };
@@ -82,15 +85,15 @@ export class UserService {
       throw new HttpException("旧密码不正确", HttpStatus.BAD_REQUEST);
     }
 
-    await this.userRepository.update(
-      { id: uid },
-      { password: encryptByMD5(changeUserPasswordDto.newPassword) }
-    );
+    await this.updateUser(uid, {
+      password: encryptByMD5(changeUserPasswordDto.newPassword),
+    });
+
     return "success";
   }
 
   // true 说明存在有相同手机号的用户
-  async checkUserExistByPhoneNumber(phoneNumber:string) {
+  async checkUserExistByPhoneNumber(phoneNumber: string) {
     return await this.userRepository.findOneBy({ phoneNumber });
   }
 
@@ -98,7 +101,14 @@ export class UserService {
     return await this.userRepository.findOneBy({ id });
   }
 
-  async findUserWithBudgetById(id: number) {
+  /**
+   *
+   * 根据userId 查找用户的预算表
+   * @param {number} id
+   * @return {Promise<User>} 
+   * @memberof UserService
+   */
+  async findBudgetByUserId(id: number) {
     return await this.userRepository.findOne({
       where: {
         id,
@@ -121,14 +131,20 @@ export class UserService {
     });
   }
 
-   /** 查询用户和其消费记录 */
-   async findUserWithConsumptionRecordById(id: number) {
+/**
+ *
+ * 用户及其收支记录
+ * @param {number} id
+ * @return {*} 
+ * @memberof UserService
+ */
+async findUserWithIncomeOrExpensesRecordById(id: number) {
     return await this.userRepository.findOne({
       where: {
         id,
       },
       relations: {
-        consumptionRecord: true,
+        incomeOrExpensesRecord: true,
       },
     });
   }
@@ -151,15 +167,16 @@ export class UserService {
     return await this.userRepository.save(user);
   }
 
-  async getUserDetail(uid:number){
+  async getUserDetail(id: number) {
     return await this.userRepository.findOneBy({
-      id:uid
+      id,
     });
   }
-  
-  async updateUser(uid:number,updateUserDto:UpdateUserDto){
-    console.log("🚀 ~ file: user.service.ts:154 ~ UserService ~ updateUser ~ updateUserDto:", updateUserDto);
-     await this.userRepository.update(uid,updateUserDto);
-     return "success"
+
+  async updateUser(uid: number, updateUserDto: UpdateUserDto) {
+    const oldUserInfo = await this.findUserById(uid);
+    const newUserInfo = this.userRepository.merge(oldUserInfo, updateUserDto);
+    await this.userRepository.save(newUserInfo);
+    return "success";
   }
 }

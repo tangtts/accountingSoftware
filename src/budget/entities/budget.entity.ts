@@ -35,7 +35,7 @@ export class Budget {
     comment:"预算金额",
     default:0
   })
-  budget:number
+  budgetAmount:number
 
   @ManyToOne(()=>User,(user)=>user.budgetRecord,{
       cascade:true,

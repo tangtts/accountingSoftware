@@ -1,34 +1,24 @@
 import { Type } from "class-transformer";
-import { IsEnum, IsIn, IsNotEmpty, IsNumber, IsString, MIN, Max, } from "class-validator";
+import { IsEnum, IsIn, IsNotEmpty, IsNumber, IsString, MIN, Max, Min, } from "class-validator";
 
 
-export enum BudgetType { 
+export enum CreateBudgetTimeType { 
   DAY = 1,
   WEEK = 2,
   MONTH = 3
 }
 
 export class CreateBudgetDto {
-  // @IsNotEmpty()
-  // @Type(()=>Number)
-  // @IsNumber()
-  // year:number = new Date().getFullYear()
-
-  // @IsNotEmpty()
-  // @Type(()=>Number)
-  // @IsNumber()
-  // @Min(0)
-  // @Max(12)
-  // month:number = new Date().getMonth()
 
   @IsNotEmpty()
   @Type(()=>Number)
   // 分别代表日 周 月
   @IsIn([1,2,3])
-  type:number = 1
+  createBudgetTimeType:number = 1
 
   @IsNotEmpty()
   @IsNumber()
   @Type(()=>Number)
-  budget:number = 0
+  @Min(0)
+  budgetAmount:number = 0
 }

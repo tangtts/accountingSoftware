@@ -5,12 +5,13 @@ import {
   LoggerService,
 } from '@nestjs/common';
 import { ArgumentsHost, Catch } from '@nestjs/common';
-
+import { getReqMainInfo } from 'src/utils/getReqMainInfo';
+import {Logger} from "winston";
 
 @Catch()
 export class AllExceptionFilter implements ExceptionFilter {
   constructor(
-    private readonly logger: LoggerService,
+    private readonly logger: Logger,
   ) {}
   catch(exception: unknown, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
@@ -34,17 +35,12 @@ export class AllExceptionFilter implements ExceptionFilter {
     console.log(exception)
 
     const responseBody = {
-      headers: request.headers,
-      query: request.query,
-      body: request.body,
-      params: request.params,
-      timestamp: new Date().toISOString(),
-      
+      ...getReqMainInfo(request),
       exceptioin: exception['name'],
       error: msg,
     };
 
-    this.logger.error('[toimc]', responseBody);
+    this.logger.error({message: responseBody});
     response.status(httpStatus).json(responseBody);
   }
 }

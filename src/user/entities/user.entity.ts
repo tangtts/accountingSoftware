@@ -2,7 +2,7 @@ import { Exclude } from "class-transformer";
 import { Budget } from "src/budget/entities/budget.entity";
 import { TimeRangeBudget } from "src/budget/entities/budgetDetail.entity";
 import { CommonCategories } from "src/common/entities/commonCategories.entity";
-import { IncomeOrCost } from "src/income/entities/income.entity";
+import {  IncomeOrExpenses } from "src/income/entities/incomeOrExpenses.entity";
 import {
   Column,
   CreateDateColumn,
@@ -20,7 +20,9 @@ export class User {
   @Column()
   username: string;
 
-  @Column()
+  @Column({
+    unique:true
+  })
   phoneNumber: string;
 
   @Column({
@@ -29,18 +31,17 @@ export class User {
   })
   avatar: string;
 
-  @Column({
-    select:false
-  })
+  @Exclude()
+  @Column()
   password: string;
 
-  @Column({ default: false,select:false })
+  @Column({ default: false })
   isAdmin: boolean;
 
   @Column({ default: true, comment: "激活/失活" })
   isActive: boolean;
 
-  @Column({ default: false,select:false })
+  @Column({ default: false })
   isDeleted: boolean;
 
   @CreateDateColumn({
@@ -56,12 +57,13 @@ export class User {
   updateTime: Date;
 
   // 消费记录关联
-  @OneToMany(()=>IncomeOrCost, incomeOrCost=>incomeOrCost.consumptionUser,{
+  @OneToMany(()=>IncomeOrExpenses, incomeOrCost=>incomeOrCost.incomeOrExpensesUser,{
     cascade:true,
     onDelete:"CASCADE"
   })
-  consumptionRecord:IncomeOrCost[]
+  incomeOrExpensesRecord:IncomeOrExpenses[]
 
+   // 预算表
   @OneToMany(()=>Budget, budget=>budget.userBudget)
   budgetRecord:Budget[]
 

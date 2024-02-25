@@ -15,9 +15,9 @@ import { UserService } from "./user.service";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { LoginUserDto } from "./dto/login-user.dto";
-import { RequireLogin, UserInfo } from "src/customDecorator";
+import { PublicApi, RequireLogin, UserInfo } from "src/customDecorator";
 import { ChangeUserPasswordDto } from "./dto/change-userPassword.dto";
-import { ApiBody, ApiOperation, ApiTags } from "@nestjs/swagger";
+import { ApiBody, ApiOperation, ApiProperty, ApiTags } from "@nestjs/swagger";
 import { ConfigService } from "@nestjs/config";
 import { ConfigEnum } from "src/config/config.enum";
 
@@ -32,15 +32,14 @@ export class UserController {
   ) {}
 
   @ApiOperation({ summary: '注册' })
-  @ApiBody({
-    type: CreateUserDto
-  })
+  @PublicApi()
   @Post("register")
   create(@Body() createUserDto: CreateUserDto) {
     return this.userService.create(createUserDto);
   }
 
-  @RequireLogin()
+  @ApiOperation({ summary: '登录' })
+  @PublicApi()
   @Post("login")
   login(@Body() loginUserDto: LoginUserDto) {
     return this.userService.login(loginUserDto);
@@ -48,6 +47,7 @@ export class UserController {
 
   @ApiOperation({ summary: '生成验证码' })
   @Get("capcha")
+  @PublicApi()
   createCapcha(@Res() res) {
     let { text, data } = this.genCaptchaService.captcha();
     const prefix = this.configService.get(ConfigEnum.REDIS_REGISTER_CODE,"registerCode");
@@ -61,6 +61,7 @@ export class UserController {
     res.send(data);
   }
 
+  @ApiOperation({ summary: '修改密码' })
   @Post("changePassword")
   changePassword(
     @UserInfo("uid") uid,
@@ -69,14 +70,15 @@ export class UserController {
     return this.userService.changeUserPassword(uid, changeUserPasswordDto);
   }
 
+  @ApiOperation({ summary: '用户详细信息' })
   @Get("detail")
   userDetail(@UserInfo("uid") uid) {
     return this.userService.getUserDetail(uid);
   }
 
+  @ApiOperation({ summary: '更新用户信息' })
   @Post("update")
   updateUser(@UserInfo("uid") uid,@Body() updateUserDto:UpdateUserDto) {
-    console.log(updateUserDto);
     return this.userService.updateUser(uid,updateUserDto);
   }
 }

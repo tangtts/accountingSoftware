@@ -8,6 +8,7 @@ export const setupSwagger = (app: INestApplication) => {
     .setTitle('Nestjs Swagger')
     .setDescription('Nestjs backend API')
     .setVersion('1.0')
+    .addBearerAuth()
     .build();
 
   const document = SwaggerModule.createDocument(app, swaggerConfig);

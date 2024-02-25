@@ -8,35 +8,42 @@ import {
   CreateDateColumn,
   Entity,
   JoinColumn,
+  JoinTable,
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
 
-export enum IncomeOrCostType {
-  COST = "0",
-  INCOME = "1",
+/**
+ *
+ * 消费收入枚举
+ * @export
+ * @enum {number}
+ */
+export enum IncomeOrExpensesType {
+  EXPENSES = "0", // 花费
+  INCOME = "1", // 收入
 }
 
-export enum PayType {
+export enum IncomeOrExpensesPatternType {
   ALIPay,
   WEIXINPay,
-  CASh,
+  CASH,
   OTHER,
 }
 
-@Entity("income")
-export class IncomeOrCost {
+@Entity("income_or_expenses")
+export class IncomeOrExpenses {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column({
     type: "enum",
-    enum: IncomeOrCostType,
-    default: IncomeOrCostType.COST,
+    enum: IncomeOrExpensesType,
+    default: IncomeOrExpensesType.EXPENSES,
     comment: "收入或支出",
   })
-  type: IncomeOrCostType;
+  incomeOrExpensesType: IncomeOrExpensesType;
 
   @Column({
     comment: "金额",
@@ -48,17 +55,17 @@ export class IncomeOrCost {
   picUrlsString: string;
 
   @Column({
-    comment: "类别",
+    comment: "消费或者收入类别",
   })
   categoryType: string;
 
   @Column({
-    comment: "支付方式",
+    comment: "消费或者收入方式",
     type: "enum",
-    enum: PayType,
-    default: PayType.ALIPay,
+    enum: IncomeOrExpensesPatternType,
+    default: IncomeOrExpensesPatternType.ALIPay,
   })
-  payType: PayType;
+  incomeOrExpensesPatternType: IncomeOrExpensesPatternType;
 
   @Column({
     nullable: false,
@@ -80,7 +87,7 @@ export class IncomeOrCost {
   })
   updateTime: Date;
 
-  // 支付的用户
-  @ManyToOne(() => User, user => user.consumptionRecord)
-  consumptionUser: User;
+  // 用户
+  @ManyToOne(() => User, user => user.incomeOrExpensesRecord)
+  incomeOrExpensesUser: User;
 }
