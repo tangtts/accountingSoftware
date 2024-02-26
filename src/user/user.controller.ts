@@ -19,7 +19,7 @@ import { PublicApi, RequireLogin, UserInfo } from "src/customDecorator";
 import { ChangeUserPasswordDto } from "./dto/change-userPassword.dto";
 import { ApiBody, ApiOperation, ApiProperty, ApiTags } from "@nestjs/swagger";
 import { ConfigService } from "@nestjs/config";
-import { ConfigEnum } from "src/config/config.enum";
+import { Config } from "config/configType";
 
 @ApiTags("用户模块")
 @Controller("user")
@@ -28,7 +28,7 @@ export class UserController {
     private readonly userService: UserService,
     private readonly genCaptchaService: GenCaptchaService,
     private readonly redisService: RedisService,
-    private  configService:ConfigService
+    private  configService:ConfigService<Config>
   ) {}
 
   @ApiOperation({ summary: '注册' })
@@ -50,7 +50,7 @@ export class UserController {
   @PublicApi()
   createCapcha(@Res() res) {
     let { text, data } = this.genCaptchaService.captcha();
-    const prefix = this.configService.get(ConfigEnum.REDIS_REGISTER_CODE,"registerCode");
+    const prefix = this.configService.get("REDIS.REGISTER_CODE","registerCode",{infer:true});
     
     this.redisService.set(
       `${prefix}:${text.toLocaleLowerCase()}`,

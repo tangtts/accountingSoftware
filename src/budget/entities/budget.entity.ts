@@ -7,16 +7,6 @@ export class Budget {
   @PrimaryGeneratedColumn()
   id:number
 
-  // @Column({
-  //   default:new Date().getFullYear()
-  // })
-  // year:number
-
-  // @Column({
-  //   default:new Date().getMonth()
-  // })
-  // month:number
-
   @Column({
     comment:"开始日期时间戳",
     type:"varchar",

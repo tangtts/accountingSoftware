@@ -1,4 +1,3 @@
-import { ConfigEnum } from 'src/config/config.enum';
 import { ConfigService } from "@nestjs/config";
 import {
   BadRequestException,
@@ -12,13 +11,14 @@ import { JwtService } from "@nestjs/jwt";
 import { Request } from "express";
 import { Reflector } from "@nestjs/core";
 import { isJWT } from 'class-validator';
+import { Config } from "config/configType";
 @Injectable()
 export class AuthGuard implements CanActivate {
   @Inject()
   private jwtService: JwtService;
 
   @Inject()
-  private configService: ConfigService;
+  private configService: ConfigService<Config>;
 
   @Inject()
   private reflector: Reflector;
@@ -47,7 +47,7 @@ export class AuthGuard implements CanActivate {
 
     try {
       const payload = await this.jwtService.verifyAsync(token, {
-        secret: this.configService.get(ConfigEnum.JWT_SECRET),
+        secret: this.configService.get("JWT.SECRET",{infer:true}),
       });
 
       request["user"] = payload;

@@ -8,6 +8,7 @@ import {
   Delete,
   Query,
   ParseIntPipe,
+  Inject,
 } from "@nestjs/common";
 import { IncomeOrExpensesService } from "./incomeOrExpenses.service";
 import { CreateIncomeOrExpensesDto } from "./dto/create-incomeOrExpenses.dto";
@@ -26,8 +27,8 @@ import { isEmpty } from "class-validator";
 @Controller("incomeOrExpenses")
 export class IncomeController {
   constructor(
-    private readonly incomeOrExpensesService: IncomeOrExpensesService
-  ) {}
+    private readonly incomeOrExpensesService: IncomeOrExpensesService,
+  ) { }
 
   @ApiOperation({ summary: "创建收入/支出" })
   @Post("/create")
@@ -46,18 +47,16 @@ export class IncomeController {
 
   @ApiOperation({ summary: "获取所有收入/支出类型" })
   @Post("/all")
-  getAllIncomeFromTime(
+  async getAllIncomeFromTime(
     @UserInfo("uid") userId: number,
     @Body("startTime") startTime: Date,
     @Body("endTime") endTime: Date,
     @Body("incomeOrExpensesType") incomeOrExpensesType: IncomeOrExpensesType
   ) {
-    return this.incomeOrExpensesService.getListFromTimeAndType(
-      userId,
+    return this.getTimeIncomeOrExpenses(userId,
       startTime,
       endTime,
-      incomeOrExpensesType
-    );
+      incomeOrExpensesType)
   }
 
   @ApiOperation({ summary: "获取单个收入/支出详情" })
@@ -68,23 +67,32 @@ export class IncomeController {
 
   // 预算
   private getAmountTotal(data: Array<{ amount: string | number }>) {
-    if(isEmpty(data)) return 0;
+    if (isEmpty(data)) return 0;
     return data.reduce((acc, curr) => acc + Number(curr.amount), 0);
   }
 
-  private async getTimeIncomeOrCost(
+  private async getTimeIncomeOrExpenses(
     uid: number,
     startTime: Date,
     endTime: Date,
-    type?: IncomeOrExpensesType // 不传是全部
+    incomeOrExpensesType?: IncomeOrExpensesType // 不传是全部
   ) {
-    let r = await this.incomeOrExpensesService.getListFromTimeAndType(
+    let result =  await this.incomeOrExpensesService.getListFromTimeAndType(
       uid,
       startTime,
       endTime,
-      type
-    );
-    return r?.incomeOrExpensesRecord;
+      incomeOrExpensesType
+    ) as Array<IncomeOrExpenses>;
+
+    if(result.length !== 0){
+      result = result.map(item => {
+        return {
+          ...item,
+          picUrls: item.picUrlsString.split(","),
+        }
+      })
+    } 
+    return result
   }
 
   /**
@@ -100,12 +108,12 @@ export class IncomeController {
     filterRecord: Array<IncomeOrExpenses>,
     type?: IncomeOrExpensesType
   ) {
-    if(!filterRecord)return ({ income:[],expense:[]})
+    if (!filterRecord) return ({ income: [], expense: [] })
 
     if (type) {
       return {
         [type == IncomeOrExpensesType.EXPENSES ? "expenses" : "income"]:
-          filterRecord.filter(
+          filterRecord.filter( 
             ({ incomeOrExpensesType }) => incomeOrExpensesType == type
           ),
       };
@@ -134,14 +142,14 @@ export class IncomeController {
       startMonthDay,
       endMonthDay,
     } = getStartAndEndDate();
-      console.log("🚀 ~ IncomeController ~ getCurrentDayIncome ~ endWeekDay:",startWeekDay, endWeekDay);
+    console.log("🚀 ~ IncomeController ~ getCurrentDayIncome ~ endWeekDay:", startWeekDay, endWeekDay);
 
     let { income: dayIncome, expenses: dayCost } = this.filterIncomeByType(
-      await this.getTimeIncomeOrCost(uid, new Date(startDay), new Date(endDay))
+      await this.getTimeIncomeOrExpenses(uid, new Date(startDay), new Date(endDay))
     );
 
     let { income: weekIncome, expenses: weekCost } = this.filterIncomeByType(
-      await this.getTimeIncomeOrCost(
+      await this.getTimeIncomeOrExpenses(
         uid,
         new Date(startWeekDay),
         new Date(endWeekDay)
@@ -149,7 +157,7 @@ export class IncomeController {
     );
 
     let { income: monthIncome, expenses: monthCost } = this.filterIncomeByType(
-      await this.getTimeIncomeOrCost(
+      await this.getTimeIncomeOrExpenses(
         uid,
         new Date(startMonthDay),
         new Date(endMonthDay)

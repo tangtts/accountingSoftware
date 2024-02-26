@@ -17,13 +17,11 @@ import { BudgetModule } from "./budget/budget.module";
 import { Budget } from "./budget/entities/budget.entity";
 import { TimeRangeBudget } from "./budget/entities/budgetDetail.entity";
 import * as Joi from "joi";
-import * as dotenv from "dotenv";
-import { ConfigEnum } from "./config/config.enum";
-import { Logger } from "winston";
 import logger from "./middlewares/logger.middleware";
 import { winstonConfig } from "./utils/winton";
 import { ResponseFormatInterceptorInterceptor } from "./interceptors/response-format.interceptor";
-
+import configuration from 'config'
+import { Config } from "config/configType";
 const schema = Joi.object({
   NODE_ENV: Joi.string()
     .valid("development", "production")
@@ -46,16 +44,10 @@ const schema = Joi.object({
     RedisModule,
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: [
-        process.env.NODE_ENV === "development"
-          ? '.env.development'
-          : '.env.production',
-          '.env',
-      ],
       validationSchema: schema,
       load: [
         () => {
-          const values = dotenv.config({ path:'.env' });
+          const values = configuration();
           const { error } = schema.validate(values?.parsed, {
             // 允许未知的环境变量
             allowUnknown: true,
@@ -75,12 +67,13 @@ const schema = Joi.object({
     JwtModule.registerAsync({
       global: true,
       inject: [ConfigService],
-      useFactory: (configService: ConfigService) => {
+      useFactory: (configService: ConfigService<Config>) => {
         return {
-          secret: configService.get(ConfigEnum.JWT_SECRET),
+          secret: configService.get("JWT.SECRET",{infer:true}),
           signOptions: {
             expiresIn: configService.get(
-              ConfigEnum.JWT_ACCESS_TOKEN_EXPIRES_TIME
+              "JWT.ACCESS_TOKEN_EXPIRES_TIME",
+              {infer:true}
             ),
           },
         };
@@ -88,14 +81,14 @@ const schema = Joi.object({
     }),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
-      useFactory: (configService: ConfigService) => {
+      useFactory: (configService: ConfigService<Config>) => {
         return {
           type: "mysql",
-          host: configService.get(ConfigEnum.MYSQL_SERVER_HOST),
-          port: configService.get(ConfigEnum.MYSQL_SERVER_PORT),
-          username: configService.get(ConfigEnum.MYSQL_SERVER_USERNAME),
-          password: configService.get(ConfigEnum.MYSQL_SERVER_PASSWORD),
-          database: configService.get(ConfigEnum.MYSQL_SERVER_DATABASE),
+          host: configService.get("MYSQL.HOST",{infer:true}),
+          port: configService.get("MYSQL.PORT",{infer:true}),
+          username: configService.get("MYSQL.USERNAME",{infer:true}),
+          password: configService.get("MYSQL.PASSWORD",{infer:true}),
+          database: configService.get("MYSQL.DATABASE",{infer:true}),
           entities: [
             User,
             CommonCategories,
@@ -112,7 +105,7 @@ const schema = Joi.object({
     CommonModule,
     IncomeModule,
     BudgetModule,
-    winstonConfig()
+    winstonConfig(),
   ],
   controllers: [AppController],
   providers: [

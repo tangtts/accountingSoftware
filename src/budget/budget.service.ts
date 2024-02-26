@@ -199,11 +199,6 @@ export class BudgetService {
     endDateTimestamp: string
   ) {
     let {budgetRecord} = await this.userService.findBudgetByUserId(uid);
-
-    if(!budgetRecord || budgetRecord.length === 0){
-      throw new BadRequestException("没有所属当前用户预算表！")
-    }
-
     return (
       budgetRecord.find(item => {
         return (

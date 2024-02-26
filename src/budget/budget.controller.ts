@@ -65,21 +65,21 @@ export class BudgetController {
   @ApiOperation({ summary: "根据时间查找预算表" })
   @Get("/detailByType")
   detail(@UserInfo("uid") uid,
-    @Query("type") type: number,
+  @Query("type") type: number,
   ) {
     const [startTimestamp, endTimestamp] = genTimestampByType(type);
     return this.budgetService.findOne(uid, startTimestamp+'', endTimestamp+'');
   }
 
-  // TODO 不知道用在了哪里，剩下的接口还没有对接
-  @ApiOperation({ summary: "根据时间段创建预算表" })
+  @ApiOperation({ summary: "根据年月日时间段创建预算表" })
   @Post("/createTimeRange")
   createTimeRange(@UserInfo("uid") uid, @Body() createTimeRangeBudgetDto: CreateTimeRangeBudgetDto) {
     return this.budgetService.createTimeRangeBudget(uid, createTimeRangeBudgetDto);
   }
 
+  @ApiOperation({ summary: "根据年月日返回预算表" })
   @Get("/timeRangeBudgetList") timeRangeBudgetList(@UserInfo("uid") uid, 
-  @Query("type", new ParseEnumPipe(CreateBudgetTimeType)) type: number) {
+  @Query("type", ParseIntPipe) type: number) {
     const [startTimestamp, endTimestamp] = genTimestampByType(type);
     return this.budgetService.getTimeRangeBudgetList(uid, startTimestamp,endTimestamp);
   }

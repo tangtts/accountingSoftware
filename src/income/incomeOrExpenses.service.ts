@@ -3,7 +3,7 @@ import { BadRequestException, HttpException, HttpStatus, Inject, Injectable } fr
 import { CreateIncomeOrExpensesDto } from "./dto/create-incomeOrExpenses.dto";
 import { UpdateIncomeOrExpensesDto } from "./dto/update-incomeOrExpenses.dto";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Between, Repository } from "typeorm";
+import { Between, Repository, getConnection } from "typeorm";
 import {
   IncomeOrExpenses,
   IncomeOrExpensesType,
@@ -41,7 +41,7 @@ export class IncomeOrExpensesService {
   }
 
   async update(updateIncomeDto: UpdateIncomeOrExpensesDto) {
-    let oldRecord = await this.incomeOrExpensesRepository.findOneBy({id:updateIncomeDto.id});
+    let oldRecord = await this.incomeOrExpensesRepository.findOneBy({ id: updateIncomeDto.id });
 
     if (!oldRecord) {
       throw new HttpException(
@@ -51,11 +51,14 @@ export class IncomeOrExpensesService {
     }
 
     let picUrlsString = updateIncomeDto.picUrls.join(",");
+    delete updateIncomeDto.picUrls;
 
-    await this.incomeOrExpensesRepository.save({
-      updateIncomeDto,
-      picUrlsString,
-    });
+    await this.incomeOrExpensesRepository.update(
+      updateIncomeDto.id,
+      {
+        ...updateIncomeDto,
+        picUrlsString,
+      });
 
     return "success";
   }
@@ -65,7 +68,7 @@ export class IncomeOrExpensesService {
       id,
     });
 
-    if(!r){
+    if (!r) {
       throw new BadRequestException("不存在此订单信息！")
     }
 
@@ -82,28 +85,27 @@ export class IncomeOrExpensesService {
     startTime?: Date,
     endTime?: Date,
     incomeOrExpensesType?: IncomeOrExpensesType // 可以不传,不传是全部
-  ) {
-    // TODO 添加了 username，不添加 select 会带上整个 user 类
-    const queryBuilder = this.userRepository
-      .createQueryBuilder("user").select("user.username")
-      .leftJoinAndSelect("user.incomeOrExpensesRecord", "u")
-      .where("u.id = :userId", { userId });
+  ): Promise<IncomeOrExpenses[]> {
+
+    let condition: Record<string, any> = {
+      payTime: Between(startTime, endTime)
+    };
 
     if (incomeOrExpensesType) {
-      queryBuilder.andWhere("u.incomeOrExpensesType = :incomeOrExpensesType", {
-        incomeOrExpensesType,
-      });
+      condition.incomeOrExpensesType = incomeOrExpensesType
     }
-
-    if (startTime) {
-      // 大于startTime
-      queryBuilder.andWhere("u.createdTime >= :startTime", { startTime });
+    // TODO 添加了 username，不添加 select 会带上整个 user 类
+    let result = await this.userRepository.findOne({
+      relations: ["incomeOrExpensesRecord"],
+      where: {
+        id: userId,
+        incomeOrExpensesRecord: condition,
+      },
+      // select: ["incomeOrExpensesRecord"]
+    })
+    if (!result) {
+      return []
     }
-
-    if (endTime) {
-      queryBuilder.andWhere("u.createdTime <= :endTime", { endTime });
-    }
-
-    return await queryBuilder.getOne();
+    return result.incomeOrExpensesRecord
   }
 }

@@ -36,8 +36,8 @@ export class AllExceptionFilter implements ExceptionFilter {
 
     const responseBody = {
       ...getReqMainInfo(request),
-      exceptioin: exception['name'],
-      error: msg,
+      error: exception['name'],
+      errorMsg: msg,
     };
 
     this.logger.error({message: responseBody});

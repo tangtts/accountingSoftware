@@ -10,6 +10,9 @@ import {
   IsOptional,
   IsString,
   IsUrl,
+  Max,
+  Min,
+  ValidateIf,
   ValidateNested,
 } from "class-validator";
 import { IsStringAndNotEmpty } from "src/customDecorator";
@@ -36,12 +39,14 @@ export class CreateIncomeOrExpensesDto {
     description: "收入支出数量",
     example: 1,
   })
-  @IsStringAndNotEmpty()
-  amount: string;
+  @Type(() => Number)
+  @IsNumber()
+  amount: number;
 
   // undefined 可以满足 isOptional
-  @IsOptional()
-  @IsUrl(undefined, { each: true })
+  @ArrayMinSize(0)
+  @ValidateIf(o => o.picUrls && o.picUrls.length > 0)
+  @IsUrl({}, { each: true })
   picUrls: Array<string>;
 
   @ApiProperty({
@@ -59,7 +64,7 @@ export class CreateIncomeOrExpensesDto {
   })
   @IsEnum(IncomeOrExpensesPatternType)
   @Type(() => Number) // 支付方式
-  IncomeOrExpensesPatternType: IncomeOrExpensesPatternType;
+  incomeOrExpensesPatternType: IncomeOrExpensesPatternType;
 
   @ApiProperty({
     description: "收入支出时间",
@@ -68,7 +73,7 @@ export class CreateIncomeOrExpensesDto {
   @Transform(({ value }) => new Date(value))
   @IsDate()
   @IsOptional()
-  IncomeOrExpensesTime: Date;
+  incomeOrExpensesTime: Date;
 
   @ApiProperty({
     description: "收入支出备注",

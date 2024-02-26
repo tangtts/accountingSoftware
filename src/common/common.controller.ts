@@ -10,6 +10,7 @@ import {
   UseInterceptors,
   UploadedFile,
   Req,
+  Inject,
 } from "@nestjs/common";
 import { CommonService } from "./common.service";
 import { CreateCommonCategoryDto } from "./dto/create-commonCategory.dto";
@@ -19,21 +20,35 @@ import { diskStorage } from "multer";
 import * as path from "path";
 import { ensureDir } from "fs-extra";
 import { ConfigService } from "@nestjs/config";
-import { RequireLogin, UserInfo } from "src/customDecorator";
+import { PublicApi, RequireLogin, UserInfo } from "src/customDecorator";
+import * as OSS from 'ali-oss';
 @Controller("common")
 export class CommonController {
+  client: OSS;
   constructor(
     private readonly commonService: CommonService,
-    private readonly configService: ConfigService
-  ) {}
+    private readonly configService: ConfigService,
+  ) {
+    const config = {
+      // 填写你自己的 AccessKey 
+      accessKeyId: 'LTAI5tJZKeExiYQNvdoRz9iJ',
+      accessKeySecret: 'vJviRopIxV6Go5UotOluU4bceWRHRH',
+      // 存储桶名字
+      bucket: 'shuokuntang',
+      // 文件存储路径
+      dir: 'images/',
+    };
+
+    this.client = new OSS(config);
+  }
 
   @Get("/findCategory")
-  findAllCategories(@UserInfo('uid') uid:number,) {
+  findAllCategories(@UserInfo('uid') uid: number,) {
     return this.commonService.getAllCategories(uid);
   }
 
   @Post("/createCategory")
-  create(@UserInfo('uid') uid:number, @Body() createCommonCategoryDto: CreateCommonCategoryDto) {
+  create(@UserInfo('uid') uid: number, @Body() createCommonCategoryDto: CreateCommonCategoryDto) {
     return this.commonService.createCategory(uid, createCommonCategoryDto);
   }
 
@@ -59,23 +74,29 @@ export class CommonController {
           file.originalname = Buffer.from(file.originalname, "latin1").toString(
             "utf8"
           );
-          console.log(file.originalname,file)
           const uniqueSuffix = Date.now() + "-" + file.originalname;
           cb(null, file.fieldname + "-" + uniqueSuffix);
         },
       }),
     })
   )
+
+  @PublicApi()
   @Post("/upload")
-  upload(
+  async upload(
     @Req() req: any,
     @Body() uploadDTO: any,
     @UploadedFile() file: Express.Multer.File
   ) {
-    const PORT = this.configService.get("nest_server_port");
-    return {
-      file: req.file,
-      url: `http://127.0.0.1:${PORT}/static/${req.file.filename}`,
-    };
+    const localePath = path.join(process.cwd(), "my-uploads", file.filename)
+    try {
+      const { url } = await this.client.put(file.fieldname + "-" + file.originalname,
+        localePath)
+      return {
+        url
+      }
+    } catch (error) {
+      console.log(error)
+    }
   }
 }

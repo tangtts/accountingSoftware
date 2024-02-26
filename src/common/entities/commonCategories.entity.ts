@@ -29,12 +29,6 @@ export class CommonCategories {
   })
   value: string;
 
-  @Column({
-    comment: "对应的预期数量",
-    default: 0,
-  })
-  amount: number;
-
   @CreateDateColumn({
     comment: "创建时间",
   })

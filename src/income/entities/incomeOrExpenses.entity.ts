@@ -47,8 +47,9 @@ export class IncomeOrExpenses {
 
   @Column({
     comment: "金额",
+    default:0
   })
-  amount: string;
+  amount: number;
 
   @Column({ type: "text", nullable: true, comment: "照片url" })
   @Exclude()

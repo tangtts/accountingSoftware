@@ -10,7 +10,7 @@ import { encryptByMD5 } from "src/utils";
 import { JwtService } from "@nestjs/jwt";
 import { ChangeUserPasswordDto } from "./dto/change-userPassword.dto";
 import { ConfigService } from "@nestjs/config";
-import { ConfigEnum } from "src/config/config.enum";
+import { Config } from "config/configType";
 @Injectable()
 export class UserService {
   // 使用写在这里就相当于 this 注入了
@@ -21,14 +21,11 @@ export class UserService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
 
-    private configService: ConfigService
+    private configService: ConfigService<Config>
   ) {}
 
   async create(createUserDto: CreateUserDto) {
-    const prefix = this.configService.get(
-      ConfigEnum.REDIS_REGISTER_CODE,
-      "registerCode"
-    );
+    const prefix = this.configService.get("REDIS.REGISTER_CODE","registerCode",{infer:true});
     // 要判断 capcha 是否正确
     let r = await this.redisService.get(
       `${prefix}:${createUserDto.capcha.toLocaleLowerCase()}`
