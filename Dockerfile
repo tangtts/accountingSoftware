@@ -1,4 +1,4 @@
-FROM node:16.18.0 as build-stage
+FROM node:20 as build-stage
 
 WORKDIR /app
 
@@ -10,10 +10,10 @@ RUN npm install
 
 COPY . .
 
-RUN npm run build
+RUN  npm run build
 
 # production stage
-FROM node:16.18.0 as production-stage
+FROM node:20 as production-stage
 
 COPY --from=build-stage /app/dist /app
 COPY --from=build-stage /app/package.json /app/package.json

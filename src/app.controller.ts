@@ -10,13 +10,7 @@ import { ensureDir } from 'fs-extra';
 import { diskStorage } from 'multer';
 import  * as path from 'path';
 import { PublicApi } from 'src/customDecorator';
-class LoginUserDto1 {
-  @IsString()
-  name: string
 
-  @IsNumber()
-  age: number
-}
 
 class LoginUserDto2 {
   name: string
@@ -30,7 +24,7 @@ class LoginUserDto2 {
 }
 
 @ApiTags("基础模块")
-@Controller()
+@Controller("/")
 export class AppController {
   client: OSS;
   constructor(
@@ -46,6 +40,7 @@ export class AppController {
     this.client = new OSS(config);
   }
 
+  @PublicApi()
   @Get()
   getHello(): string {
     return this.appService.getHello();
@@ -85,16 +80,5 @@ export class AppController {
     } catch (error) {
       console.log(error)
     }
-  }
-
-  @Post()
-  @UseInterceptors(ClassSerializerInterceptor)
-  getHelloPost(@Body() dto: any): LoginUserDto2 {
-    console.log(dto)
-    let x = new LoginUserDto2({
-      name: "zs",
-      age: 30
-    })
-    return x
   }
 }

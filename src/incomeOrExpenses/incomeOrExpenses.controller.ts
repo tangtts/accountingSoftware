@@ -142,8 +142,6 @@ export class IncomeController {
       startMonthDay,
       endMonthDay,
     } = getStartAndEndDate();
-    console.log("🚀 ~ IncomeController ~ getCurrentDayIncome ~ endWeekDay:", startWeekDay, endWeekDay);
-
     let { income: dayIncome, expenses: dayCost } = this.filterIncomeByType(
       await this.getTimeIncomeOrExpenses(uid, new Date(startDay), new Date(endDay))
     );

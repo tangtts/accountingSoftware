@@ -33,13 +33,12 @@ const schema = Joi.object({
     Joi.string().ip(),
     Joi.string().domain()
   ),
-  MYSQL_SERVER_PORT: Joi.number().port().default(3306).required(),
-  MYSQL_SERVER_USERNAME: Joi.string().required(),
-  MYSQL_SERVER_PASSWORD: Joi.string().required(),
+  MYSQL_SERVER_PORT: Joi.number().port().default(3306),
+  MYSQL_SERVER_USERNAME: Joi.string().default("root"),
+  MYSQL_SERVER_PASSWORD: Joi.string().default("1413qqgmtskABC"),
   // 不能含有数字
   MYSQL_SERVER_DATABASE: Joi.string()
-    .pattern(/\D{4,}/)
-    .required(),
+    .pattern(/\D{4,}/).default("accounting")
 });
 @Module({
   imports: [
@@ -55,7 +54,7 @@ const schema = Joi.object({
           const values  = configuration()
           const { error } = schema.validate(values?.parsed, {
             // 允许未知的环境变量
-            allowUnknown: true,
+            allowUnknown: true, 
             // 如果有错误，不要立即停止，而是收集所有错误
             abortEarly: false,
           });
@@ -87,13 +86,12 @@ const schema = Joi.object({
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (configService: ConfigService<Config>) => {
-        console.log(configService.get("MYSQL.USERNAME",{infer:true}));
         return {
           type: "mysql",
           host: configService.get("MYSQL.HOST",{infer:true}),
           port: configService.get("MYSQL.PORT",{infer:true}),
           username: configService.get("MYSQL.USERNAME",{infer:true}),
-          password: configService.get("MYSQL.PASSWORD","1413qqgmtskABC",{infer:true}),
+          password: configService.get("MYSQL.PASSWORD",{infer:true}),
           database: configService.get("MYSQL.DATABASE",{infer:true}),
           entities: [
             User,

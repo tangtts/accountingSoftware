@@ -7,7 +7,7 @@ const configFileNameObj = {
   production: 'prod'
 }
 
-const env = process.env.NODE_ENV;
+const env = process.env.NODE_ENV || 'development';
 let mergedConfig: Record<string, any> = {};
 
 
