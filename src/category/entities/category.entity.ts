@@ -15,27 +15,29 @@ import {
 } from "typeorm";
 
 @Entity("categories")
-export class CommonCategories {
+export class Categories {
   @PrimaryGeneratedColumn()
   id: string;
 
   @Column({
     comment: "名称",
   })
-  name: string;
-
+  categoryName: string;
+ 
   @Column({
     comment: "对应的value属性",
   })
-  value: string;
+  categoryValue: string;
 
   @CreateDateColumn({
     comment: "创建时间",
+    select:false
   })
   createdTime: Date;
 
   @UpdateDateColumn({
     comment: "更新时间",
+    select:false
   })
   updateTime: Date;
 
@@ -45,15 +47,4 @@ export class CommonCategories {
     onDelete: "CASCADE",
   })
   userCategory: User;
-
-  // 所有的
-  // @OneToMany(
-  //   () => User,
-  //   timeRangeBudget => timeRangeBudget.commonCategories,
-  //   {
-  //     cascade: true,
-  //     onDelete: "CASCADE",
-  //   }
-  // )
-  // timeRangeBudgetUser: TimeRangeBudget[];
 }

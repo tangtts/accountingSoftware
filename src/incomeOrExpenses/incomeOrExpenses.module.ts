@@ -11,4 +11,4 @@ import { User } from "src/user/entities/user.entity";
   controllers: [IncomeController],
   providers: [IncomeOrExpensesService],
 })
-export class IncomeModule {}
+export class IncomeOrExpensesModule {}

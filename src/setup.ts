@@ -7,7 +7,7 @@ import { setupSwagger } from './utils/swagger';
 import { TypeormFilter } from './filters/typeorm.filter';
 import { HttpExceptionFilter } from './filters/http-exception.filter';
 import { AllExceptionFilter } from './filters/AllExceptionFilter.filter';
-import { Config } from 'config/configType';
+import { Config } from './config/configType';
 
 export const setupApp = (app: INestApplication, config: ConfigService<Config>) => {
 

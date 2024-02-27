@@ -8,7 +8,6 @@ import {
   PrimaryGeneratedColumn,
 } from "typeorm";
 import * as dayjs from "dayjs";
-import { CommonCategories } from "src/common/entities/commonCategories.entity";
 
 export interface ITimeRangeBudgetList {
   id:string,

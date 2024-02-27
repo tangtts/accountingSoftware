@@ -19,7 +19,7 @@ import { PublicApi, RequireLogin, UserInfo } from "src/customDecorator";
 import { ChangeUserPasswordDto } from "./dto/change-userPassword.dto";
 import { ApiBody, ApiOperation, ApiProperty, ApiTags } from "@nestjs/swagger";
 import { ConfigService } from "@nestjs/config";
-import { Config } from "config/configType";
+import { Config } from "../config/configType";
 
 @ApiTags("用户模块")
 @Controller("user")

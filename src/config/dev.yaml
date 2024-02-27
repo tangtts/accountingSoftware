@@ -1,5 +1,3 @@
-NSET:
-  PORT: 3000
 
 MYSQL:
   DATABASE: accounting
@@ -7,6 +5,7 @@ MYSQL:
   HOST: rm-cn-x0r3mjikh0005e0o.rwlb.rds.aliyuncs.com
   USERNAME: root
   PASSWORD: 1413qqgmtskABC
+  LOG_ON: false
 
 REDIS:
   HOST: r-bp14a2o6s6rsc0ud8lpd.redis.rds.aliyuncs.com

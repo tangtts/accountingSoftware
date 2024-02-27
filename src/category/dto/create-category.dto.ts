@@ -1,12 +1,8 @@
 import { IsString } from "class-validator";
 import { IsStringAndNotEmpty } from "src/customDecorator";
 
-export class CreateCommonCategoryDto {
+export class CreateCategoryDto {
 
   @IsStringAndNotEmpty()
-  name:string;
-
-  @IsStringAndNotEmpty()
-  value:string
-
+  categoryName:string;
 }

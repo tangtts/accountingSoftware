@@ -10,7 +10,7 @@ import { encryptByMD5 } from "src/utils";
 import { JwtService } from "@nestjs/jwt";
 import { ChangeUserPasswordDto } from "./dto/change-userPassword.dto";
 import { ConfigService } from "@nestjs/config";
-import { Config } from "config/configType";
+import { Config } from "../config/configType";
 @Injectable()
 export class UserService {
   // 使用写在这里就相当于 this 注入了

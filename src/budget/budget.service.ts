@@ -11,7 +11,7 @@ import { TimeRangeBudget } from "./entities/budgetDetail.entity";
 import { UpdateTimeRangeBudgetDto } from "./dto/update-TimeRangeBudget.dto";
 import * as dayjs from "dayjs";
 import * as isSameOrBefore from "dayjs/plugin/isSameOrBefore";
-import { CommonCategories } from "src/common/entities/commonCategories.entity";
+import { Categories } from 'src/category/entities/category.entity';
 dayjs.extend(isSameOrBefore);
 
 @Injectable()
@@ -55,7 +55,7 @@ export class BudgetService {
   private async generateBudgetList(
     startTimestamp: number,
     endTimestamp: number,
-    categories: CommonCategories[],
+    categories: Categories[],
     uid: number
   ) {
     // 找到所有的分类
@@ -70,7 +70,7 @@ export class BudgetService {
         return {
           id: item.id,
           budget: 0,
-          name: item.name,
+          name: item.categoryName,
         };
       }),
     });
@@ -107,13 +107,13 @@ export class BudgetService {
           if (hasExist) {
             return {
               id: hasExist.id,
-              name: category.name,
+              name: category.categoryName,
               budget: hasExist.budget,
             };
           } else {
             return {
               id: category.id,
-              name: category.name,
+              name: category.categoryName,
               budget: 0,
             };
           }

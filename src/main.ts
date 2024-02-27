@@ -3,7 +3,7 @@ import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { setupApp } from './setup';
-import { Config } from 'config/configType';
+import { Config } from './config/configType';
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule,{
     cors: true

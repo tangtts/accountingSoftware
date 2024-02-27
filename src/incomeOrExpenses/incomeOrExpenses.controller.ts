@@ -88,7 +88,7 @@ export class IncomeController {
       result = result.map(item => {
         return {
           ...item,
-          picUrls: item.picUrlsString.split(","),
+          picUrls:item.picUrlsString ? item.picUrlsString.split(",") : [],
         }
       })
     } 

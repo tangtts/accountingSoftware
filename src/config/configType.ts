@@ -4,12 +4,20 @@ interface NestConfig {
   PORT:number
 }
 
+interface OSSConfig {
+  ACCESS_KEY_ID:string
+  ACCESS_KEY_SECRET:string
+  BUCKET:string
+  DIR:string
+}
+
 interface MysqlConfig {
   DATABASE: string;
   PORT: number;
   HOST: string;
   USERNAME: string;
   PASSWORD: string;
+  LOG_ON:boolean
 }
 
 interface RedisConfig {

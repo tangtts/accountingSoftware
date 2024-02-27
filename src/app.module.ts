@@ -1,4 +1,4 @@
-import {  IncomeOrExpenses } from "./income/entities/incomeOrExpenses.entity";
+import {  IncomeOrExpenses } from "./incomeOrExpenses/entities/incomeOrExpenses.entity";
 import { MiddlewareConsumer, Module, NestModule, RequestMethod } from "@nestjs/common";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
@@ -8,9 +8,7 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { User } from "./user/entities/user.entity";
 import { RedisModule } from "./redis/redis.module";
 import { JwtModule } from "@nestjs/jwt";
-import { CommonModule } from "./common/common.module";
-import { CommonCategories } from "./common/entities/commonCategories.entity";
-import { IncomeModule } from "./income/incomeOrExpenses.module";
+import { IncomeOrExpensesModule } from "./incomeOrExpenses/incomeOrExpenses.module";
 import { APP_GUARD, APP_INTERCEPTOR } from "@nestjs/core";
 import { AuthGuard } from "./auth.guard";
 import { BudgetModule } from "./budget/budget.module";
@@ -20,8 +18,13 @@ import * as Joi from "joi";
 import logger from "./middlewares/logger.middleware";
 import { winstonConfig } from "./utils/winton";
 import { ResponseFormatInterceptorInterceptor } from "./interceptors/response-format.interceptor";
-import configuration from 'config'
-import { Config } from "config/configType";
+import configuration from './config'
+import { Config } from "./config/configType";
+import  * as yaml from 'js-yaml';
+import * as fs from 'fs';
+import { join } from "path";
+import { Categories } from "./category/entities/category.entity";
+import { CategoryModule } from "./category/category.module";
 const schema = Joi.object({
   NODE_ENV: Joi.string()
     .valid("development", "production")
@@ -42,12 +45,14 @@ const schema = Joi.object({
   imports: [
     UserModule,
     RedisModule,
+    IncomeOrExpensesModule,
+    CategoryModule,
     ConfigModule.forRoot({
       isGlobal: true,
       validationSchema: schema,
       load: [
         () => {
-          const values = configuration();
+          const values  = configuration()
           const { error } = schema.validate(values?.parsed, {
             // 允许未知的环境变量
             allowUnknown: true,
@@ -82,28 +87,27 @@ const schema = Joi.object({
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (configService: ConfigService<Config>) => {
+        console.log(configService.get("MYSQL.USERNAME",{infer:true}));
         return {
           type: "mysql",
           host: configService.get("MYSQL.HOST",{infer:true}),
           port: configService.get("MYSQL.PORT",{infer:true}),
           username: configService.get("MYSQL.USERNAME",{infer:true}),
-          password: configService.get("MYSQL.PASSWORD",{infer:true}),
+          password: configService.get("MYSQL.PASSWORD","1413qqgmtskABC",{infer:true}),
           database: configService.get("MYSQL.DATABASE",{infer:true}),
           entities: [
             User,
-            CommonCategories,
+            Categories,
             IncomeOrExpenses,
             Budget,
             TimeRangeBudget,
           ],
           synchronize: true,
-          logging: true,
+          logging: configService.get("MYSQL.LOG_ON",{infer:true}),
           connectorPackage: "mysql2",
         };
       },
     }),
-    CommonModule,
-    IncomeModule,
     BudgetModule,
     winstonConfig(),
   ],

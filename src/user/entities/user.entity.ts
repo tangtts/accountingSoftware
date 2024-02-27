@@ -1,8 +1,8 @@
 import { Exclude } from "class-transformer";
 import { Budget } from "src/budget/entities/budget.entity";
 import { TimeRangeBudget } from "src/budget/entities/budgetDetail.entity";
-import { CommonCategories } from "src/common/entities/commonCategories.entity";
-import {  IncomeOrExpenses } from "src/income/entities/incomeOrExpenses.entity";
+import { Categories } from 'src/category/entities/category.entity';
+import { IncomeOrExpenses } from "src/incomeOrExpenses/entities/incomeOrExpenses.entity";
 import {
   Column,
   CreateDateColumn,
@@ -75,8 +75,8 @@ export class User {
 // 更改预算后, 需要更新用户的分类
 
 
-  @OneToMany(()=>CommonCategories, category=>category.userCategory)
-  categories:CommonCategories[]
+  @OneToMany(()=>Categories, category=>category.userCategory)
+  categories:Categories[]
 
 
 }
