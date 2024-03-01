@@ -1,7 +1,9 @@
 
 @use 'uni.scss' as varibleColors;
 @use "sass:math";
-@import 'uview-plus/theme.scss';
+
+
+
 $colors:(
  success: varibleColors.$successColor,
  warning: varibleColors.$warningColor,
@@ -9,7 +11,7 @@ $colors:(
  "red":#ff0000,
  "orange":#ffa500,
  "green":#008000,
- 
+ "white":#fff
 );
 
 $numbers:0 50 100 200 300 400 500 600 700 800 900;
@@ -60,10 +62,6 @@ $widthSizes:60;
 	}
 }
 
-
-
-
-
 .flex{
 	display: flex;
 }
@@ -112,7 +110,11 @@ $alignType:(
 
 @each $type in $alignType {
     .items-#{$type}{
-			align-items: $type;
+			@if $type == end {
+			 align-items: flex-end;
+			}@else {
+				align-items: $type;
+			}
     }
 }
 

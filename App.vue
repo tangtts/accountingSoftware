@@ -21,6 +21,8 @@
 <style lang="scss">
 	@import "uview-plus/index.scss";
 	@import 'uview-plus/theme.scss';
-	@import "common.scss"
+	@import "common.scss";
+	
+
 	
 </style>

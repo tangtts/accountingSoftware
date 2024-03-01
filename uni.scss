@@ -2,8 +2,12 @@
 @import 'uview-plus/theme.scss';
 
 $primaryColor: #b15426;
-
 $successColor: #008000;
-
 $warningColor: #ffa500;
 
+
+$u-primary: $primaryColor;
+$u-warning: $warningColor;
+$u-success: $successColor;
+$u-error: #f56c6c;
+$u-info: #909399;

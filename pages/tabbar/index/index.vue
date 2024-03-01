@@ -9,17 +9,18 @@
 			<view class="flex items-center">
 				<text class="month"> {{dayjs().month() + 1}}</text> 月 . 支出
 				<view class="ml-20 justify-end">
-					<up-text color="white" mode="price" :block="false" :text="timeRangeIncomeCost.month.cost" />
+					<up-text color="white" mode="price" :block="false" 
+					:text="timeRangeIncomeCost.month.expenses" />
 				</view>
 			</view>
 
 			<view class="flex">
 				预算：
-				<up-text color="white" :text="budget ? budget : '点此设置'" @click="openSettingDialog" />
+				<up-text color="white" :text="budgetAmount ? budgetAmount : '点此设置'" @click="openSettingDialog" />
 
 				<text class="mr-20">本月净收入:</text>
 				<up-text color="white" mode="price" :block="false"
-					:text="timeRangeIncomeCost.month.income - timeRangeIncomeCost.month.cost" />
+					:text="timeRangeIncomeCost.month.income - timeRangeIncomeCost.month.expenses" />
 
 			</view>
 		</my-card>
@@ -39,7 +40,7 @@
 								}}
 							</view>
 							<view class="payText">{{
-									timeRangeIncomeCost.day.cost
+									timeRangeIncomeCost.day.expenses
 								}}</view>
 						</view>
 
@@ -56,7 +57,7 @@
 								{{timeRangeIncomeCost.week.income}}
 							</view>
 							<view class="payText">{{
-								timeRangeIncomeCost.week.cost
+								timeRangeIncomeCost.week.expenses
 							}}</view>
 						</view>
 					</template>
@@ -72,7 +73,7 @@
 								{{timeRangeIncomeCost.month.income}}
 							</view>
 							<view class="payText">
-								{{timeRangeIncomeCost.month.cost}}
+								{{timeRangeIncomeCost.month.expenses}}
 							</view>
 						</view>
 					</template>
@@ -86,7 +87,7 @@
 			<my-card>
 				<u--form>
 					<u-form-item label="金额" prop="amount" borderBottom>
-						<u--input type="number" v-model="model.budget"></u--input>
+						<u--input type="number" v-model="model.budgetAmount"></u--input>
 					</u-form-item>
 					<u-form-item label="">
 						<u-button text="确定" type="primary" @click="submit"></u-button>
@@ -123,8 +124,8 @@
 	const showPopup = ref(false);
 
 	const model = reactive({
-		type: 3,
-		budget: ""
+		createBudgetTimeType: 3,
+		budgetAmount: ""
 	});
 
 	const submit = () => {
@@ -150,33 +151,33 @@
 
 	const openSettingDialog = () => {
 		showPopup.value = true;
-		model.budget = budget.value
+		model.budgetAmount = budgetAmount.value
 	}
 
 
 	const timeRangeIncomeCost = reactive({
 		day: {
 			income: 0,
-			cost: 0
+			expenses: 0
 		},
 		week: {
 			income: 0,
-			cost: 0
+			expenses: 0
 		},
 		month: {
 			income: 0,
-			cost: 0
+			expenses: 0
 		}
 	})
 
 
-	const budget = ref(0)
+	const budgetAmount = ref(0)
 
 	const getBudgetDetail = () => {
 		budgetDetail({
-			type: "1"
+			createBudgetTimeType: "3"
 		}).then(res => {
-			budget.value = res.budget
+			budgetAmount.value = res.budgetAmount
 		})
 	}
 	onShow(() => {

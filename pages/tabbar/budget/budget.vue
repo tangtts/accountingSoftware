@@ -1,8 +1,6 @@
 <template>
 	<view class="container">
-		<u-button :type="timeRangeActionType.type"
-		 icon="bell"
-		 plain @click="isTimeRangeActionSheetShow = true">
+		<u-button :type="timeRangeActionType.type" icon="bell" plain @click="isTimeRangeActionSheetShow = true">
 			时间: {{timeRangeActionType.name}}
 		</u-button>
 
@@ -20,10 +18,10 @@
 
 			<view class="flex mt-40">
 				<view style="flex">
-					已用: <text class="text-orange"> {{incomeCost.cost}} </text>
+					已用: <text class="text-orange"> {{incomeCost.expenses}} </text>
 				</view>
 				<view class="ml-10">
-					可用 : <text class="text-green"> {{tempBudget - incomeCost.cost}} </text>
+					可用 : <text class="text-green"> {{tempBudget - incomeCost.expenses}} </text>
 				</view>
 			</view>
 		</my-card>
@@ -33,21 +31,24 @@
 				icon="/static/icon/category.png">
 				<template #value>
 
-					<up-input v-if="category.isClick" placeholder="请输入内容" border="surround" v-model="category.budget"></up-input>
+					<up-input 
+					type="number"
+					v-if="category.isClick" placeholder="请输入内容"
+					 border="surround" v-model="category.budget"></up-input>
 
 					<text v-else>{{ category.budget }}</text>
 
 					<u-button v-if="category.isClick" size="mini" class="ml-10" style="width: 60rpx;" type="success"
 						@click="changeBudgetStatus(category,'close')">确定</u-button>
 
-					<u-button v-else plain 
-					:type="timeRangeActionType.type" class="ml-10" size="mini" style="width: 60rpx;"
+					<u-button v-else plain :type="timeRangeActionType.type" class="ml-10" size="mini" style="width: 60rpx;"
 						@click="changeBudgetStatus(category,'open')">修改</u-button>
 
 				</template>
 			</u-cell>
 		</u-cell-group>
-		<u-button class="mt-20" :type="timeRangeActionType.type" @click="submit">提交</u-button>
+		<u-button class="mt-20" 
+		:type="timeRangeActionType.type" @click="submit">提交</u-button>
 
 		<u-action-sheet @close="isTimeRangeActionSheetShow = false" cancelText="取消" safeAreaInsetBottom
 			:actions="timeRangeActionSheetActions" @select="selectActionSheetClick" title="区间类型"
@@ -81,11 +82,10 @@
 		changeRangeType,
 		timeMap
 	} from "../../../utils/time.js"
-import {
+	import {
 		onShow
 	} from "@dcloudio/uni-app"
 	import {
-		findCategory,
 		getTimeRangeBudget,
 		updateTimeRange,
 		createTimeRange,
@@ -118,22 +118,22 @@ import {
 
 	let incomeCost = ref({
 		income: 0,
-		cost: 0
+		expenses: 0
 	})
 
 	const timeRangeActionSheetActions = [{
 			id: Type.DAY,
 			name: "今天",
-			type:"primary"
+			type: "primary"
 		}, {
 			id: Type.WEEK,
 			name: "本周",
-			type:"warning"
+			type: "warning"
 		},
 		{
 			id: Type.MONTH,
 			name: "本月",
-			type:"success"
+			type: "success"
 		},
 	]
 	// 时间类型
@@ -143,17 +143,15 @@ import {
 	const [startTime, endTime] = changeRangeType(timeRangeActionType.value.name);
 
 
-// 时间预算表 id
+	// 时间预算表 id
 	let id = "";
-
-
 	/**
 	 * 修改预算 
 	 */
 	const confirmToChangeBudget = () => {
 		budgetCreate({
-			type: timeRangeActionType.value.id,
-			budget: model.value
+			createBudgetTimeType: timeRangeActionType.value.id,
+			budgetAmount: model.value
 		}).then(res => {
 			uni.showToast({
 				icon: "none",
@@ -192,8 +190,8 @@ import {
 		budgetDetail({
 			type: timeRangeActionType.value.id
 		}).then(res => {
-			budget.value = res.budget;
-			tempBudget.value = res.budget;
+			budget.value = res.budgetAmount;
+			tempBudget.value = res.budgetAmount;
 		})
 	}
 
@@ -202,15 +200,25 @@ import {
 	 * 修改预算时间列表
 	 */
 	const submit = () => {
+		// 校验item
+	let isPass = categories.value.every(category=>{
+			 return  !isNaN(category.budget) && !String(category.budget).startsWith('0')
+		 })
+		 if(!isPass){
+			 return uni.showToast({
+			 	icon:"error",
+				title:"请检查格式！"
+			 })
+		 }
 		updateTimeRange({
 			id,
 			type: timeRangeActionType.value.id,
 			budgetList: categories.value
 		}).then(res => {
-				uni.showToast({
-					icon: "none",
-					title: "操作成功"
-				})
+			uni.showToast({
+				icon: "none",
+				title: "操作成功"
+			})
 		})
 	}
 

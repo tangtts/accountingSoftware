@@ -1,8 +1,8 @@
 <template>
 	<view class="container">
-		<view class="title">登录 </view>
+		<view class="title">登录</view>
 		<my-card>
-			<u--form labelPosition="left" :model="model" label-width="70" :rules="rules" ref="uFormRef">
+			<u--form labelPosition="left" :model="model" label-width="60" :rules="rules" ref="uFormRef">
 				<u-form-item label="手机号" prop="phoneNumber" borderBottom>
 					<u--input v-model="model.phoneNumber" placeholder="请输入手机号"></u--input>
 				</u-form-item>
@@ -14,8 +14,8 @@
 				<u-form-item borderBottom>
 					<u-button rounded @click="submit" type="primary">提交</u-button>
 				</u-form-item>
-				
-		<up-text text="没有账号？去注册"  type="primary" @click="goToRegister"></up-text>
+
+				<up-text text="没有账号？去注册" type="primary" @click="goToRegister"></up-text>
 			</u--form>
 		</my-card>
 	</view>
@@ -31,11 +31,11 @@
 		ref
 	} from "vue"
 
-const goToRegister = ()=>{
-	uni.navigateTo({
-		url:"/pages/bootstrap/register"
-	})
-}
+	const goToRegister = () => {
+		uni.navigateTo({
+			url: "/pages/bootstrap/register"
+		})
+	}
 
 	const model = reactive({
 		phoneNumber: "",
@@ -63,14 +63,13 @@ const goToRegister = ()=>{
 	const uFormRef = ref(null)
 
 	const submit = () => {
-	uni.removeStorageSync("token")
+		uni.removeStorageSync("token")
 		uFormRef.value.validate().then(res => {
-			uni.$u.toast('校验通过')
 			login(model).then(res => {
 				uni.setStorage({
 					key: "token",
 					data: res.access_token,
-					success:()=> {
+					success: () => {
 						uni.switchTab({
 							url: "/pages/tabbar/index/index"
 						})
@@ -85,9 +84,8 @@ const goToRegister = ()=>{
 
 <style lang="scss">
 	.title {
-		font-size: 40rpx;
-		display: block;
+		font-size: 60rpx;
 		text-align: center;
-		margin-bottom: 20rpx;
+		margin-bottom: 40rpx;
 	}
 </style>

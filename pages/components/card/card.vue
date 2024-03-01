@@ -20,7 +20,7 @@
 <style lang="scss" scoped>
 .card{
 	border-radius: 10rpx;
-	padding: 20rpx;
+	padding: 40rpx;
 	border: 2rpx solid #ccc;
 	overflow: hidden;
 }

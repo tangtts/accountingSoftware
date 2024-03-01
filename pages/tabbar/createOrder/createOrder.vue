@@ -1,18 +1,27 @@
 <template>
 	<view class="container">
-		<u-tabs :list="list" :current="form.type" @click="clickTab"></u-tabs>
-		<view class="mt-40">
-			<view class="border-bottom border-red-200  flex justify-end">
+		<u-tabs 
+		:list="list" 
+		lineWidth="20"
+		 lineColor="#f56c6c"
+		:current="form.incomeOrExpensesType" 
+		@click="clickTab"></u-tabs>
+		
+		<view class="my-40">
+			
+			<view class="mb-40 border-bottom border-red-200  flex justify-end">
 
 				<view class="flex-1 flex margin-top-auto">
 					<up-input
+						focus
+						fontSize="22"
 					   prefixIcon="edit-pen"
-					 type="number" clearable  placeholder="请输入金额" border="none" v-model="form.amount"></up-input>
+					 type="number"  placeholder="请输入金额" border="none" v-model="form.amount"></up-input>
 				</view>
 
 				<view>
 					<u-upload :fileList="form.picUrls" @delete="deletePic" 
-					@afterRead="afterRead" max-count="5" name="1"
+						@afterRead="afterRead" :maxCount="2" name="file"
 						uploadIcon="camera-fill" uploadIconColor="#b15426">
 					</u-upload>
 				</view>
@@ -81,7 +90,7 @@
 	import {
 		incomeCreate,
 		BASE_URL,
-		findCategory,
+		getCategories,
 		getIncomeDetail,
 		updateIncome
 	} from "../../../utils/api.js"
@@ -101,7 +110,7 @@
 	const now = Date.now()
 	const datetimePicker = ref(now)
 	const categoryActionSheetActions = ref([])
-	const categoryType = ref({})
+	const categoryType = reactive({})
 
 	const accountActionSheetActions = ref([{
 			name: '现金',
@@ -126,10 +135,10 @@
 
 	const fileList = ref([])
 	const form = reactive({
-		type: 0,
+		incomeOrExpensesType: 0,
 		categoryType: '',
 		amount: '',
-		payType: accountType.value.id,
+		incomeOrExpensesPatternType: accountType.value.id,
 		payTime: dateFormat.value,
 		remark: "",
 		picUrls: []
@@ -152,6 +161,7 @@
 		getIncomeDetail({
 			detailId
 		}).then(res => {
+			console.log(res)
 			if (res.picUrls) {
 				res.picUrls = res.picUrls.map(item => {
 					return {
@@ -161,16 +171,23 @@
 			} else {
 				res.picUrls = []
 			}
-
 			Object.assign(form, res)
 		})
 	}
 
 
 	const submit = () => {
-		form.categoryType = categoryType.value.value
+		form.categoryType = categoryType.categoryValue;
 		form.payTime = dateFormat.value;
 		let picUrls = form.picUrls.map(item => item.url)
+		if(!form.amount){
+			return uni.$u.toast("请输入金额")
+		}
+		
+		if(isNaN(Number(form.amount))){
+			return uni.$u.toast("请输入在正确的金额")
+		}
+		
 		if (isAdd.value) {
 			incomeCreate({
 				...form,
@@ -220,7 +237,7 @@
 	const uploadFilePromise = (url) => {
 		return new Promise((resolve, reject) => {
 			let a = uni.uploadFile({
-				url: `${BASE_URL}/common/upload`, // 仅为示例，非真实的接口地址
+				url: `${BASE_URL}/upload`, // 仅为示例，非真实的接口地址
 				filePath: url,
 				name: 'file',
 				success: (res) => {
@@ -230,10 +247,12 @@
 		});
 	};
 
+// 先根据 type 分出分类还是账户
+// 再选择点击的具体项目
 	const selectActionSheetClick = (type, actionSheetType) => {
 		switch (type) {
 			case "分类":
-				categoryType.value = actionSheetType
+				Object.assign(categoryType,actionSheetType)
 				break;
 			case "账户":
 				accountType.value = actionSheetType
@@ -247,18 +266,22 @@
 		value
 	}) => {
 		datetimePicker.value = value
-
 		isDatetimePickerShow.value = false
 	}
 
 	const getCategory = () => {
-		findCategory().then(res => {
-			categoryActionSheetActions.value = res;
-			categoryType.value = res[0]
+		 getCategories().then(res => {
+			categoryActionSheetActions.value = res.map(item=>{
+				return {
+					...item,
+					name:item.categoryName,
+					id:item.categoryValue
+				}
+			});
+			Object.assign(categoryType,categoryActionSheetActions.value[0])
 		})
 	}
 	getCategory()
-
 
 	const list = ref([{
 		name: "支出",
@@ -274,7 +297,7 @@
 		// 因为是item.index 是 number 类型，
 		// 但 swiper-item-id 需要字符串 
 		// 需要转为 字符串
-		form.type = '' + item.index
+		form.incomeOrExpensesType = '' + item.index
 	}
 </script>
 

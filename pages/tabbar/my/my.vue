@@ -1,14 +1,15 @@
 <template>
 	<view class="container">
 		<my-card class="header">
-
-			<view class="flex flex-col justify-center align-center">
-				<u-upload :fileList="fileList" @afterRead="afterRead" @delete="deletePic" name="file">
-					<up-avatar size="80" :src="userDetails.avatar"></up-avatar>
-				</u-upload>
-
-				<view class="mt-40">
-					<text class="font-60" @click="isTextUsername = true">
+			<view class="flex gap-40 items-end">
+				<view class="">
+					<u-upload :fileList="fileList" @afterRead="afterRead"
+					 @delete="deletePic" name="file">
+						<up-avatar size="80" :src="userDetails.avatar"></up-avatar>
+					</u-upload>
+				</view>
+				<view>
+					<text class="font-60 text-white" @click="isTextUsername = true">
 						{{ userDetails.username}}
 					</text>
 				</view>
@@ -17,6 +18,7 @@
 
 		<u-cell-group class="mt-40">
 			<u-cell icon="setting-fill" title="修改密码" @click="showPopup = true"></u-cell>
+			<u-cell icon="grid-fill" title="添加分类" @click="goToCategoryPage"></u-cell>
 			<u-cell icon="integral-fill" title="退出" @click="showModal = true"></u-cell>
 		</u-cell-group>
 
@@ -87,6 +89,12 @@
 		fileList.value.splice(event.index, 1);
 	};
 
+const goToCategoryPage = ()=>{
+	uni.navigateTo({
+		url:"/pages/views/categoriesListPage/categoriesListPage"
+	})
+}
+
 	const update = () => {
 		userUpdate({
 			...userDetails.value,
@@ -101,7 +109,7 @@
 
 	const afterRead = async (event) => {
 		uni.uploadFile({
-			url: `${BASE_URL}/common/upload`,
+			url: `${BASE_URL}/upload`,
 			filePath: event.file.url,
 			name: 'file',
 			success: (res) => {
@@ -171,11 +179,7 @@
 
 <style>
 	.header {
-		height: 320rpx;
-		display: flex;
-		flex-direction: column;
-		justify-content: flex-end;
-		color: white;
+		padding: 40rpx;
 		background: linear-gradient(to right, #314755 0%, #26a0da 51%, #314755 100%) no-repeat center/cover;
 	}
 </style>

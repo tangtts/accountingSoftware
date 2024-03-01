@@ -1,13 +1,13 @@
-export const BASE_URL = `http://localhost:3000`
+export const BASE_URL = `http://47.97.110.222:3005/api/v1`;
 const http = {
+	
 	config: {
 		url: "",
 		data: {},
 		BASE_URL,
 		method: "GET",
 		header: {
-			"Content-Type": "application/json",
-			authorization: `Bearer ${uni.getStorageSync('token')}` || ''
+			"Content-Type": "application/json"
 		}
 	},
 
@@ -18,10 +18,14 @@ const http = {
 			uni.request({
 				method: config.method || this.config.method,
 				url: fullPath,
-				header: this.config.header,
+				header: {
+					...this.config.header,
+					authorization: `Bearer ${uni.getStorageSync('token')}` || ''
+				},
 				data: config.data
 			}).then(res => {
 				if (![200, 201].includes(res.statusCode)) {
+					console.log(res.data)
 					handleErrorCode(res.statusCode, res.data.message)
 					reject(res.data)
 				}
@@ -76,8 +80,9 @@ function handleErrorCode(code, messages) {
 			if (Array.isArray(messages)) {
 				errors = messages.join('\n')
 			} else {
-				errors = messages
+				errors = messages.error
 			}
+			console.log(messages,"error",errors)
 			uni.showToast({
 				title: errors,
 				icon: "none"
@@ -86,27 +91,34 @@ function handleErrorCode(code, messages) {
 };
 
 
-export const register = (params) => http.post('/user/register', params)
-export const login = (params) => http.post('/user/login', params)
-export const incomeCreate = (params) => http.post('/income/create', params)
-export const incomeAll = (params) => http.post('/income/all', params)
-export const findCategory = () => http.get('/common/findCategory')
-export const getIncomeDetail = (params) => http.get('/income/detail', params)
-export const updateIncome = (params) => http.post('/income/update', params)
+export const register = (body) => http.post('/user/register', body)
+export const login = (body) => http.post('/user/login', body)
+export const incomeCreate = (body) => http.post('/incomeOrExpenses/create', body)
+export const incomeAll = (body) => http.post('/incomeOrExpenses/all', body)
 
-export const getTimeRangeIncomeCost = () => http.get('/income/getTimeRangeIncomeCost')
+export const getIncomeDetail = (params) => http.get('/incomeOrExpenses/detail', params)
+export const updateIncome = (body) => http.post('/incomeOrExpenses/update', body)
 
-export const budgetCreate = (params) => http.post('/budget/create', params)
+export const getTimeRangeIncomeCost = () => http.get('/incomeOrExpenses/getTimeRangeIncomeCost')
+
+export const budgetCreate = (body) => http.post('/budget/create', body)
 
 export const budgetDetail = (params) => http.get('/budget/detailByType', params)
 
 export const getTimeRangeBudget = (params) => http.get('/budget/timeRangeBudgetList', params)
-export const changePassword = (params) => http.post('/user/changePassword', params)
+export const changePassword = (body) => http.post('/user/changePassword', body)
 
-export const updateTimeRange = (params) => http.post('/budget/updateTimeRange', params)
-export const createTimeRange = (params) => http.post('/budget/createTimeRange', params)
+export const updateTimeRange = (body) => http.post('/budget/updateTimeRange', body)
+export const createTimeRange = (body) => http.post('/budget/createTimeRange', body)
 
 export const userDetail = (params) => http.get('/user/detail', params)
-export const userUpdate = (params) => http.post('/user/update', params)
+export const userUpdate = (body) => http.post('/user/update', body)
 
-export const getCapcha = () => http.get('/user/capcha')
+export const getCapcha = () => http.get('/user/capcha');
+
+export const getCategories = () => http.get('/category/getCategories');
+export const createCategory = (body) => http.post('/category/createCategory',body);
+export const delCategory = (body) => http.post('/category/delCategory',body);
+export const updateCategory = (body) => http.post('/category/updateCategory',body);
+
+

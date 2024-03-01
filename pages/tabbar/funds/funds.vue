@@ -2,7 +2,8 @@
 	<view class="container">
 
 		<view class="flex gap-40">
-			<u-button :type="accountActionType.type" plain icon="order" @click="isAccountActionSheetShow = true">
+			<u-button :type="accountActionType.type" plain icon="order"
+			 @click="isAccountActionSheetShow = true">
 				{{accountActionType.name}}
 			</u-button>
 
@@ -19,7 +20,9 @@
 					<u-cell isLink @click="goToDetail(item)" size="large" :icon="item.formatIcon" :value="item.formatPayTime"
 						:title="item.formatAmount">
 						<template #title>
-							<up-text mode="price" :type="item.formatType" :text="item.formatAmount"></up-text>
+							<up-text mode="price" 
+							:type="item.formatType" 
+							:text="item.formatAmount"></up-text>
 						</template>
 					</u-cell>
 				</u-list-item>
@@ -130,15 +133,15 @@
 
 	const getAll = () => {
 		incomeAll({
-			type: accountActionType.value.id,
+			incomeOrExpensesType: accountActionType.value.id,
 			startTime: timeRange.value[0],
 			endTime: timeRange.value[1]
 		}).then(res => {
 			list.value = res.map(item => {
 				return {
 					id: item.id,
-					formatType: item.type == 1 ? 'primary' : 'error',
-					formatIcon: item.type == 0 ? `cut` : `fingerprint`,
+					formatType: item.incomeOrExpensesType == 0 ? 'error' : 'success',
+					formatIcon: item.incomeOrExpensesType == 0 ? `cut` : `fingerprint`,
 					formatPayTime: dayjs(item.payTime).format('YYYY-MM-DD HH:MM'),
 					formatAmount: item.amount
 				}

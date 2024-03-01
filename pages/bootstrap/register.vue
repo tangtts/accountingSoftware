@@ -1,6 +1,6 @@
 <template>
 	<view class="container">
-		<view class="title">注册 </view>
+		<view class="title">注册</view>
 		<my-card>
 			<u--form labelPosition="left" :model="model" label-width="70" :rules="rules" ref="uFormRef">
 
@@ -132,9 +132,8 @@
 
 <style lang="scss">
 	.title {
-		font-size: 40rpx;
-		display: block;
+		font-size: 60rpx;
 		text-align: center;
-		margin-bottom: 20rpx;
+		margin-bottom: 40rpx;
 	}
 </style>
