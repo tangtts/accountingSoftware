@@ -30,9 +30,16 @@ export class IncomeOrExpensesService {
     if (!user) {
       throw new HttpException("用户不存在", HttpStatus.BAD_REQUEST);
     }
+    // 格式化数据
+    let picUrls = createIncomeOrExpensesDto.picUrls;
+    let picUrlsString = ''
+    if(picUrls && picUrls.length > 0){
+      picUrlsString = picUrls.join(',')
+    }
 
     await this.incomeOrExpensesRepository.save({
       ...createIncomeOrExpensesDto,
+      picUrlsString,
       // 关联消费用户
       incomeOrExpensesUser: user,
     });
