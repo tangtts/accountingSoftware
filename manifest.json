@@ -1,6 +1,6 @@
 {
     "name" : "记账",
-    "appid" : "__UNI__EE956FE",
+    "appid" : "__UNI__913DD7E",
     "description" : "",
     "versionName" : "1.0.0",
     "versionCode" : "100",
@@ -50,11 +50,9 @@
     "quickapp" : {},
     /* 小程序特有相关 */
     "mp-weixin" : {
-        "appid" : "wxc248bb5e391f1f71",
+        "appid" : "",
         "setting" : {
-            "urlCheck" : false,
-            "minified" : true,
-            "postcss" : false
+            "urlCheck" : false
         },
         "usingComponents" : true
     },

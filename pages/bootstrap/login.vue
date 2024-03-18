@@ -23,7 +23,7 @@
 
 <script setup>
 	import {
-		login,
+		login
 	} from "../../utils/api.js"
 
 	import {
