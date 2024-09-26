@@ -2,18 +2,16 @@
 MYSQL:
   DATABASE: accounting
   PORT: 3306
-  HOST: rm-cn-x0r3mjikh0005e0o.rwlb.rds.aliyuncs.com
+  HOST: mysql-container
   USERNAME: root
-  PASSWORD: 1413qqgmtskABC
+  PASSWORD: "123456"
   LOG_ON: false
 
 REDIS:
-  HOST: r-bp14a2o6s6rsc0ud8lpd.redis.rds.aliyuncs.com
+  HOST: redis-container
   PORT: 6379
   DB: 0
   REGISTER_CODE : registerCode
-  USERNAME : r-bp14a2o6s6rsc0ud8l
-  PASSWORD : 1413qqgmtskABC
 
 JWT:
   SECRET: tang

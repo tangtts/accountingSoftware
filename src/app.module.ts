@@ -35,7 +35,7 @@ const schema = Joi.object({
   ),
   MYSQL_SERVER_PORT: Joi.number().port().default(3306),
   MYSQL_SERVER_USERNAME: Joi.string().default("root"),
-  MYSQL_SERVER_PASSWORD: Joi.string().default("1413qqgmtskABC"),
+  MYSQL_SERVER_PASSWORD: Joi.string().default("123456"),
   // 不能含有数字
   MYSQL_SERVER_DATABASE: Joi.string()
     .pattern(/\D{4,}/).default("accounting")
